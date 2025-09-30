@@ -1,0 +1,59 @@
+/* Board.css */
+.board {
+  width: 100%;
+  max-width: 320px;
+  height: 75vh;
+  overflow: auto;
+  background-color: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Header */
+.board__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.board__status {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--foreground);
+  text-transform: capitalize;
+  margin: 0;
+}
+
+.board__count {
+  min-width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--secondary);
+  color: var(--muted-foreground);
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 0 8px;
+  margin: 0;
+}
+
+/* Tasks Container */
+.board__tasks {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .board {
+    max-width: 100%;
+  }
+}

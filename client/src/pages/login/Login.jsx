@@ -1,4 +1,4 @@
-import { MoveRightIcon } from "lucide-react";
+import { MoveRightIcon, Eye, EyeOff } from "lucide-react";
 import "./Login.css";
 import { useState } from "react";
 import { useLocation } from "react-router-dom";
@@ -7,17 +7,82 @@ const Login = () => {
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
   const register = searchParams.get("register");
-  
-  const [activeTab, setActiveTab] = useState(register ? "register" : "login");
 
-  const handleSwitchTab = (tab) => {
-    setActiveTab(tab);
+  const [activeTab, setActiveTab] = useState(register === "true" ? "register" : "login");
+  const [eye, setEye] = useState(false);
+
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [passwordMessage, setPasswordMessage] = useState("");
+  const [isPasswordStrong, setIsPasswordStrong] = useState(false);
+
+  const [loading, setLoading] = useState(false);
+
+  const handleSwitchTab = (tab) => setActiveTab(tab);
+
+  const handleEyeClick = () => setEye((prev) => !prev);
+
+  const handleOnChange = (e) => {
+    const { name, value } = e.target;
+
+    if (name === "name") setName(value);
+    if (name === "email") setEmail(value);
+    if (name === "password") {
+      setPassword(value);
+      validatePassword(value);
+    }
+  };
+
+  const validatePassword = (pwd) => {
+    const hasLower = /[a-z]/.test(pwd);
+    const hasUpper = /[A-Z]/.test(pwd);
+    const hasNumber = /[0-9]/.test(pwd);
+    const hasSpecial = /[!@#$%^&*(),.?":{}|<>]/.test(pwd);
+
+    if (!hasLower) {
+      setPasswordMessage("At least one lowercase letter required");
+      return setIsPasswordStrong(false);
+    }
+    if (!hasUpper) {
+      setPasswordMessage("At least one uppercase letter required");
+      return setIsPasswordStrong(false);
+    }
+    if (!hasNumber) {
+      setPasswordMessage("At least one number required");
+      return setIsPasswordStrong(false);
+    }
+    if (!hasSpecial) {
+      setPasswordMessage("At least one special character required");
+      return setIsPasswordStrong(false);
+    }
+
+    setPasswordMessage("Strong password ✅");
+    setIsPasswordStrong(true);
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    
+    await new Promise((res) => {
+      setTimeout(() => {
+        res({ name, email, password });
+      }, 3000);
+    });
+    
+    // Reset form fields after submission
+    setName("");
+    setEmail("");
+    setPassword("");
+    setPasswordMessage("");
+    setIsPasswordStrong(false);
+    setLoading(false);
   };
 
   return (
     <div id="login" className="login">
       <div id="login-container" className="login-container">
-        {/* Brand / Heading */}
         <h1 className="login__brand">TrelloLite</h1>
         <h1 className="login__title">
           {activeTab === "login" ? "Welcome back" : "Create your account"}
@@ -28,7 +93,6 @@ const Login = () => {
             : "Start managing tasks with a few quick steps."}
         </p>
 
-        {/* CTA Switch */}
         <div id="login-switch" className="login__switch">
           <button
             onClick={() => handleSwitchTab("login")}
@@ -48,19 +112,20 @@ const Login = () => {
           </button>
         </div>
 
-        {/* Form */}
-        <form id="login-form" className="login__form">
+        <form onSubmit={handleSubmit} id="login-form" className="login__form">
           {activeTab === "register" && (
             <>
               <label htmlFor="name" className="login__label">
                 Name
               </label>
               <input
+                onChange={handleOnChange}
                 type="text"
                 name="name"
                 id="name"
                 className="login__input"
                 placeholder="John Doe"
+                value={name}
               />
             </>
           )}
@@ -69,35 +134,66 @@ const Login = () => {
             Email
           </label>
           <input
+            onChange={handleOnChange}
             type="email"
             name="email"
             id="email"
             className="login__input"
             placeholder="you@example.com"
+            value={email}
           />
 
           <label htmlFor="password" className="login__label">
             Password
           </label>
-          <input
-            type="password"
-            name="password"
-            id="password"
-            className="login__input"
-            placeholder="••••"
-          />
+          <div className="login__input-container">
+            <input
+              onChange={handleOnChange}
+              type={eye ? "text" : "password"}
+              name="password"
+              id="password"
+              className="login__input"
+              placeholder="••••"
+              value={password}
+            />
+            {eye ? (
+              <Eye onClick={handleEyeClick} className="login__input-eye" />
+            ) : (
+              <EyeOff onClick={handleEyeClick} className="login__input-eye" />
+            )}
+          </div>
+          {password && activeTab !== "login" && (
+            <p
+              className={`login__password-hint ${
+                isPasswordStrong
+                  ? "login__password-strong"
+                  : "login__password-weak"
+              }`}
+            >
+              {passwordMessage}
+            </p>
+          )}
 
-          <button type="submit" className="login__submit">
+          <button
+            type="submit"
+            className="login__submit"
+            disabled={
+              loading ||
+              (activeTab === "register" &&
+                (!isPasswordStrong || email === "" || name === "")) ||
+              (activeTab === "login" && (email === "" || password === ""))
+            }
+          >
             <MoveRightIcon className="login__submit-icon" />
             <span className="login__submit-text">
-              {activeTab === "login" ? "Log in" : "Create account"}
+              {loading
+                ? activeTab === "login"
+                  ? "Logging in..."
+                  : "Creating your account..."
+                : activeTab === "login"
+                ? "Log in"
+                : "Create account"}
             </span>
-          </button>
-
-          <p className="login__divider">or</p>
-
-          <button type="button" className="login__oauth login__oauth--google">
-            Continue with Google
           </button>
         </form>
       </div>

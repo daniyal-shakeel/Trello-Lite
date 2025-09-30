@@ -1,0 +1,98 @@
+.navbar {
+  width: 100%;
+  padding: 24px 32px;
+  background-color: var(--background);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+/* Left Section */
+.navbar__info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.navbar__title {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--foreground);
+  margin: 0;
+}
+
+.navbar__subtitle {
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--muted-foreground);
+  margin: 0;
+}
+
+/* Right Section - Add Task Button */
+.navbar__add-task {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  background-color: var(--primary);
+  color: var(--foreground);
+  border: none;
+  border-radius: var(--radius);
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+  white-space: nowrap;
+}
+
+.navbar__add-task:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.navbar__add-task:active {
+  transform: translateY(0);
+}
+
+.navbar__add-task-icon {
+  width: 20px;
+  height: 20px;
+}
+
+.navbar__add-task-text {
+  line-height: 1;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .navbar {
+    padding: 20px 24px;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .navbar__title {
+    font-size: 24px;
+  }
+
+  .navbar__subtitle {
+    font-size: 13px;
+  }
+
+  .navbar__add-task {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .navbar {
+    padding: 16px 16px;
+  }
+
+  .navbar__title {
+    font-size: 22px;
+  }
+}

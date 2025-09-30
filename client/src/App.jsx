@@ -7,6 +7,8 @@ import { Routes, Route } from "react-router-dom";
 
 const App = () => {
   const [auth, setAuth] = useState(true);
+  const [successMessage, setSuccessMessage] = useState("");
+  const [failureMessage, setFailureMessage] = useState("");
   return (
     <div>
       <Routes>
@@ -19,7 +21,17 @@ const App = () => {
             </AuthRoute>
           }
         />
-        <Route path="/login" element={<Login />} />
+        <Route
+          path="/login"
+          element={
+            <Login
+              successMessage={successMessage}
+              setSuccessMessage={setSuccessMessage}
+              failureMessage={failureMessage}
+              setFailureMessage={setFailureMessage}
+            />
+          }
+        />
       </Routes>
     </div>
   );
