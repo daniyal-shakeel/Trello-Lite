@@ -1,0 +1,268 @@
+.login{
+    background-color: var(--background);
+    width: 100%;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.login-container {
+  width: 448px;
+  margin: 0 auto;
+  padding: 32px 24px;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  margin: 40px 0;
+}
+
+.login__brand {
+  font-size: 24px;
+  font-weight: 600;
+  text-align: center;
+  margin-bottom: 32px;
+  color: var(--foreground);
+}
+
+.login__title {
+  font-size: 28px;
+  font-weight: 600;
+  text-align: center;
+  margin-bottom: 12px;
+  color: var(--foreground);
+}
+
+.login__subtitle {
+  font-size: 15px;
+  font-weight: 400;
+  text-align: center;
+  color: var(--muted-foreground);
+  margin-bottom: 32px;
+}
+
+/* Switch Buttons */
+.login__switch {
+  display: flex;
+  gap: 8px;
+  padding: 6px;
+  background-color: var(--secondary);
+  border-radius: var(--radius);
+  margin-bottom: 24px;
+}
+
+.login__switch-button {
+  flex: 1;
+  padding: 12px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  border: none;
+  border-radius: calc(var(--radius) - 4px);
+  background-color: transparent;
+  color: var(--muted-foreground);
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.login__switch-button--active {
+  background-color: var(--primary);
+  color: var(--foreground);
+}
+
+.login__switch-button:hover {
+  opacity: 0.9;
+}
+
+/* Form */
+.login__form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.login__label {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--foreground);
+}
+
+.login__input {
+  width: 100%;
+  padding: 14px 16px;
+  font-size: 15px;
+  background-color: var(--input); 
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--foreground);
+  outline: none;
+  transition: var(--transition);
+}
+
+.login__input::placeholder {
+  color: var(--muted-foreground);
+  opacity: 0.6;
+}
+
+.login__input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(173, 70, 255, 0.1);
+}
+
+/* Submit Button */
+.login__submit {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 14px 24px;
+  margin-top: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  background-color: var(--primary);
+  color: var(--foreground);
+  border: none;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.login__submit:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.login__submit:active {
+  transform: translateY(0);
+}
+
+.login__submit-icon {
+  display: flex;
+  align-items: center;
+  width: 20px;
+  height: 20px;
+}
+
+.login__submit-text {
+  line-height: 1;
+}
+
+/* Divider */
+.login__divider {
+  text-align: center;
+  color: var(--muted-foreground);
+  font-size: 14px;
+  margin: 16px 0;
+  position: relative;
+}
+
+.login__divider::before,
+.login__divider::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  width: calc(50% - 24px);
+  height: 1px;
+  background-color: var(--border);
+}
+
+.login__divider::before {
+  left: 0;
+}
+
+.login__divider::after {
+  right: 0;
+}
+
+/* OAuth Button */
+.login__oauth {
+  width: 100%;
+  padding: 14px 24px;
+  font-size: 14px;
+  font-weight: 500;
+  background-color: var(--secondary);
+  color: var(--foreground);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.login__oauth:hover {
+  background-color: var(--muted);
+  border-color: var(--primary);
+}
+
+/* Responsive Styles */
+@media (max-width: 640px) {
+  .login-container {
+    width: 100%;
+    max-width: 448px;
+    padding: 24px 16px;
+  }
+
+  .login__title {
+    font-size: 24px;
+  }
+
+  .login__subtitle {
+    font-size: 14px;
+  }
+
+  .login__input,
+  .login__submit,
+  .login__oauth {
+    padding: 12px 16px;
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .login-container {
+    width: 100%;
+    padding: 16px 12px;
+  }
+
+  .login__brand {
+    font-size: 20px;
+    margin-bottom: 24px;
+  }
+
+  .login__title {
+    font-size: 22px;
+    margin-bottom: 8px;
+  }
+
+  .login__subtitle {
+    font-size: 14px;
+    margin-bottom: 24px;
+  }
+
+  .login__switch-button {
+    padding: 10px 14px;
+    font-size: 13px;
+  }
+
+  .login__label {
+    font-size: 13px;
+  }
+}
+
+@media (min-width: 768px) {
+  .login-container {
+    padding: 48px 32px;
+  }
+
+  .login__brand {
+    font-size: 26px;
+  }
+
+  .login__title {
+    font-size: 32px;
+  }
+
+  .login__subtitle {
+    font-size: 16px;
+  }
+}
