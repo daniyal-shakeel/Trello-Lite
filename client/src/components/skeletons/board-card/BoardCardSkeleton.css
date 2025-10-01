@@ -1,0 +1,85 @@
+ .board-card-skeleton {
+            background: var(--background);
+            border-radius: 12px;
+            padding: 20px;
+
+          }
+
+          ::-webkit-scrollbar{
+            width: 0;
+          }
+
+          .card-header {
+            margin-bottom: 20px;
+          }
+
+          .skeleton-title {
+            height: 20px;
+            width: 70%;
+            margin-bottom: 12px;
+          }
+
+          .skeleton-subtitle {
+            height: 16px;
+            width: 85%;
+            margin-bottom: 10px;
+          }
+
+          .skeleton-text {
+            height: 14px;
+            width: 50%;
+          }
+
+          .card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 16px;
+          }
+
+          .card-footer-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+          }
+
+          .skeleton-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+          }
+
+          .skeleton-name {
+            width: 80px;
+            height: 16px;
+          }
+
+          .skeleton-badge {
+            width: 60px;
+            height: 24px;
+            border-radius: 12px;
+          }
+
+          @media (max-width: 1024px) {
+            .boards-grid {
+              grid-template-columns: repeat(2, 1fr);
+            }
+          }
+
+          @media (max-width: 640px) {
+            .boards-grid {
+              grid-template-columns: 1fr;
+            }
+            
+            .navbar-left {
+              gap: 12px;
+            }
+            
+            .skeleton-logo {
+              width: 100px;
+            }
+            
+            .skeleton-nav-item {
+              display: none;
+            }
+          }

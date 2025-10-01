@@ -1,7 +1,11 @@
 import { Plus } from "lucide-react";
 import "./Navbar.css";
+import NavbarSkeleton from "../skeletons/navbar/NavbarSkeleton"
 
-const Navbar = ({ boardName = "Personal Board", boardDescription = "Manage your personal tasks and goals" }) => {
+const Navbar = ({ boardName = "Personal Board", boardDescription = "Manage your personal tasks and goals", taskLoading }) => {
+  if (taskLoading) {
+    return <NavbarSkeleton />;
+  }
   return (
     <div id="navbar" className="navbar">
       {/* Left Section: Title + Subtitle */}

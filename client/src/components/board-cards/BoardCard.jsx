@@ -1,9 +1,19 @@
 import Task from "../task/Task";
 import "./BoardCard.css";
+import BoardCardSkeleton from "../skeletons/board-card/BoardCardSkeleton";
 
-const Board = ({ status= "To Do", tasks = [] }) => {
+const BoardCard = ({ status = "To Do", tasks = [], taskLoading }) => {
   const filteredTasks = tasks.filter((task) => task.status === status);
-
+  if (taskLoading) {
+    const skeletonCount = 3;
+    return (
+      <div id="board" className="board">
+        {Array.from({ length: skeletonCount }).map((_, i) => (
+          <BoardCardSkeleton key={i} />
+        ))}
+      </div>
+    );
+  }
   return (
     <div id="board" className="board">
       {/* Header */}
@@ -14,7 +24,7 @@ const Board = ({ status= "To Do", tasks = [] }) => {
 
       {/* Tasks */}
       <div className="board__tasks">
-        {filteredTasks.map((task) => (
+        {filteredTasks.map((task) => (  
           <Task
             key={task._id}
             title={task?.title}
@@ -29,4 +39,4 @@ const Board = ({ status= "To Do", tasks = [] }) => {
   );
 };
 
-export default Board;
+export default BoardCard;

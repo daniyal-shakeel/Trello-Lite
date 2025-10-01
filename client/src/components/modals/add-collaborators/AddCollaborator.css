@@ -1,0 +1,162 @@
+/* Modal Overlay */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+/* Modal Container */
+.modal-container {
+  background-color: var(--card);
+  color: var(--card-foreground);
+  border-radius: var(--radius);
+  padding: 24px;
+  width: 400px;
+  max-width: 90%;
+  box-shadow: var(--shadow-lg);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Modal Header */
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-close {
+  cursor: pointer;
+  color: var(--muted-foreground);
+  transition: var(--transition);
+}
+
+.modal-close:hover {
+  color: var(--destructive);
+}
+
+/* Modal Body */
+.modal-body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Input with arrow button */
+.input-with-btn {
+  position: relative;
+  display: flex;
+  width: 100%;
+}
+
+.modal-input {
+  width: 100%;
+  padding: 8px 40px 8px 12px; /* right padding for arrow button */
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background-color: var(--input);
+  color: var(--foreground);
+  font-size: 0.875rem;
+  outline: none;
+  transition: var(--transition);
+}
+
+.modal-input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px rgba(173, 70, 255, 0.2);
+}
+
+/* Arrow button inside input */
+.modal-input-btn {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  border: none;
+  background-color: transparent;
+  cursor: pointer;
+  color: var(--primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+.modal-input-btn:hover {
+  opacity: 0.85;
+}
+
+/* Collaborators list */
+.collaborators-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.collaborator-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 10px;
+  background-color: var(--secondary);
+  color: var(--foreground);
+  border-radius: var(--radius);
+}
+
+.collaborator-item span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.collaborator-remove {
+  cursor: pointer;
+  color: var(--destructive);
+  transition: var(--transition);
+}
+
+.collaborator-remove:hover {
+  opacity: 0.75;
+}
+
+/* Modal Footer */
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.modal-btn {
+  padding: 8px 16px;
+  border-radius: var(--radius);
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.modal-btn.add {
+  background-color: var(--primary);
+  color: var(--foreground);
+}
+
+.modal-btn.add:hover {
+  opacity: 0.85;
+}
+
+.modal-btn.cancel {
+  background-color: var(--secondary);
+  color: var(--muted-foreground);
+}
+
+.modal-btn.cancel:hover {
+  opacity: 0.85;
+}
