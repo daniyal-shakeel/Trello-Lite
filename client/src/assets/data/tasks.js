@@ -1,14 +1,15 @@
 const DEFAULT_TASK_PROPS = {
-  "Backlog": { status: "Backlog", color: "#6B7280" },
+  Backlog: { status: "Backlog", color: "#6B7280" },
   "To Do": { status: "To Do", color: "#9CA3AF" },
   "In Progress": { status: "In Progress", color: "#3B82F6" },
-  "Review": { status: "Review", color: "#8B5CF6" },
-  "Blocked": { status: "Blocked", color: "#EF4444" },
+  Review: { status: "Review", color: "#8B5CF6" },
+  Blocked: { status: "Blocked", color: "#EF4444" },
   "On Hold": { status: "On Hold", color: "#F97316" },
-  "Done": { status: "Done", color: "#22C55E" },
-  "Urgent": { status: "Urgent", color: "#F59E0B" }
+  Done: { status: "Done", color: "#22C55E" },
+  Urgent: { status: "Urgent", color: "#F59E0B" },
 };
 
+//tasks on dashboard page
 export const TASKS = [
   {
     _id: "1",
@@ -18,7 +19,7 @@ export const TASKS = [
     name: "John Doe",
     time: "2 hours ago",
     boardId: "b1",
-    ...DEFAULT_TASK_PROPS["To Do"]
+    ...DEFAULT_TASK_PROPS["To Do"],
   },
   {
     _id: "2",
@@ -28,7 +29,7 @@ export const TASKS = [
     name: "Sara Miller",
     time: "5 hours ago",
     boardId: "b2",
-    ...DEFAULT_TASK_PROPS["Backlog"]
+    ...DEFAULT_TASK_PROPS["Backlog"],
   },
   {
     _id: "3",
@@ -38,7 +39,7 @@ export const TASKS = [
     name: "Alex King",
     time: "1 day ago",
     boardId: "b3",
-    ...DEFAULT_TASK_PROPS["In Progress"]
+    ...DEFAULT_TASK_PROPS["In Progress"],
   },
   {
     _id: "4",
@@ -48,7 +49,7 @@ export const TASKS = [
     name: "Lina Smith",
     time: "3 days ago",
     boardId: "b3",
-    ...DEFAULT_TASK_PROPS["Review"]
+    ...DEFAULT_TASK_PROPS["Review"],
   },
   {
     _id: "5",
@@ -58,7 +59,7 @@ export const TASKS = [
     name: "Nora Hill",
     time: "10 minutes ago",
     boardId: "b3",
-    ...DEFAULT_TASK_PROPS["Urgent"]
+    ...DEFAULT_TASK_PROPS["Urgent"],
   },
   {
     _id: "6",
@@ -68,7 +69,7 @@ export const TASKS = [
     name: "Mary Johnson",
     time: "2 days ago",
     boardId: "b1",
-    ...DEFAULT_TASK_PROPS["On Hold"]
+    ...DEFAULT_TASK_PROPS["On Hold"],
   },
   {
     _id: "7",
@@ -78,7 +79,7 @@ export const TASKS = [
     name: "Tom Knight",
     time: "4 hours ago",
     boardId: "b3",
-    ...DEFAULT_TASK_PROPS["To Do"]
+    ...DEFAULT_TASK_PROPS["To Do"],
   },
   {
     _id: "8",
@@ -88,7 +89,7 @@ export const TASKS = [
     name: "Ravi Singh",
     time: "30 minutes ago",
     boardId: "b3",
-    ...DEFAULT_TASK_PROPS["Review"]
+    ...DEFAULT_TASK_PROPS["Review"],
   },
   {
     _id: "9",
@@ -98,7 +99,7 @@ export const TASKS = [
     name: "Oliver Moore",
     time: "1 hour ago",
     boardId: "b3",
-    ...DEFAULT_TASK_PROPS["Blocked"]
+    ...DEFAULT_TASK_PROPS["Blocked"],
   },
   {
     _id: "10",
@@ -108,7 +109,7 @@ export const TASKS = [
     name: "Kyle Parker",
     time: "6 hours ago",
     boardId: "b1",
-    ...DEFAULT_TASK_PROPS["Backlog"]
+    ...DEFAULT_TASK_PROPS["Backlog"],
   },
   {
     _id: "11",
@@ -118,7 +119,7 @@ export const TASKS = [
     name: "Emma Clark",
     time: "12 hours ago",
     boardId: "b3",
-    ...DEFAULT_TASK_PROPS["In Progress"]
+    ...DEFAULT_TASK_PROPS["In Progress"],
   },
   {
     _id: "12",
@@ -128,7 +129,7 @@ export const TASKS = [
     name: "David Brown",
     time: "3 days ago",
     boardId: "b3",
-    ...DEFAULT_TASK_PROPS["Done"]
+    ...DEFAULT_TASK_PROPS["Done"],
   },
   {
     _id: "13",
@@ -138,7 +139,7 @@ export const TASKS = [
     name: "Liam Fox",
     time: "2 days ago",
     boardId: "b3",
-    ...DEFAULT_TASK_PROPS["Urgent"]
+    ...DEFAULT_TASK_PROPS["Urgent"],
   },
   {
     _id: "14",
@@ -148,7 +149,7 @@ export const TASKS = [
     name: "Alice White",
     time: "1 day ago",
     boardId: "b3",
-    ...DEFAULT_TASK_PROPS["To Do"]
+    ...DEFAULT_TASK_PROPS["To Do"],
   },
   {
     _id: "15",
@@ -158,7 +159,7 @@ export const TASKS = [
     name: "Ben Martin",
     time: "8 hours ago",
     boardId: "b3",
-    ...DEFAULT_TASK_PROPS["Review"]
+    ...DEFAULT_TASK_PROPS["Review"],
   },
   {
     _id: "16",
@@ -168,7 +169,7 @@ export const TASKS = [
     name: "Chris Rogers",
     time: "2 hours ago",
     boardId: "b3",
-    ...DEFAULT_TASK_PROPS["Done"]
+    ...DEFAULT_TASK_PROPS["Done"],
   },
   {
     _id: "17",
@@ -178,7 +179,7 @@ export const TASKS = [
     name: "George Patel",
     time: "15 minutes ago",
     boardId: "b3",
-    ...DEFAULT_TASK_PROPS["Blocked"]
+    ...DEFAULT_TASK_PROPS["Blocked"],
   },
   {
     _id: "18",
@@ -188,7 +189,7 @@ export const TASKS = [
     name: "Hina Khan",
     time: "9 hours ago",
     boardId: "b4",
-    ...DEFAULT_TASK_PROPS["Backlog"]
+    ...DEFAULT_TASK_PROPS["Backlog"],
   },
   {
     _id: "19",
@@ -198,7 +199,7 @@ export const TASKS = [
     name: "Oscar Miller",
     time: "5 hours ago",
     boardId: "b3",
-    ...DEFAULT_TASK_PROPS["In Progress"]
+    ...DEFAULT_TASK_PROPS["In Progress"],
   },
   {
     _id: "20",
@@ -208,6 +209,6 @@ export const TASKS = [
     name: "Vera Scott",
     time: "1 day ago",
     boardId: "b3",
-    ...DEFAULT_TASK_PROPS["Done"]
-  }
+    ...DEFAULT_TASK_PROPS["Done"],
+  },
 ];

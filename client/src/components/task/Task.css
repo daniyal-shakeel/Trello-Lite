@@ -16,6 +16,14 @@
   box-shadow: 0 4px 12px rgba(173, 70, 255, 0.1);
 }
 
+.task__header{
+  position: relative;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
 /* Task Content */
 .task__title {
   font-size: 17px;
@@ -23,6 +31,11 @@
   color: var(--foreground);
   margin: 0;
   line-height: 1.4;
+}
+
+.task__title-flag{
+  width: 15px;
+  height: 15px;border-radius: 100%;
 }
 
 .task__description {

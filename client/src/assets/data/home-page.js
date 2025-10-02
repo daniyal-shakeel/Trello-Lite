@@ -1,4 +1,4 @@
-export const FEATURES = [
+export const FEATURES = [ //home page features
     {
       "title": "Kanban columns",
       "description": "Move cards across To Do, In Progress, and Done with instant clarity."

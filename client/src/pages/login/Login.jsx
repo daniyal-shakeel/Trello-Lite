@@ -1,14 +1,20 @@
 import { MoveRightIcon, Eye, EyeOff } from "lucide-react";
 import "./Login.css";
-import { useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Navigate, useLocation, useNavigate } from "react-router-dom";
+import axios from "axios";
+import Message from "../../components/ui/message/Message";
 
-const Login = () => {
+const Login = ({ auth }) => {
   const location = useLocation();
+  const navigate = useNavigate();
+
   const searchParams = new URLSearchParams(location.search);
   const register = searchParams.get("register");
 
-  const [activeTab, setActiveTab] = useState(register === "true" ? "register" : "login");
+  const [activeTab, setActiveTab] = useState(
+    register === "true" ? "register" : "login"
+  );
   const [eye, setEye] = useState(false);
 
   const [name, setName] = useState("");
@@ -18,6 +24,7 @@ const Login = () => {
   const [isPasswordStrong, setIsPasswordStrong] = useState(false);
 
   const [loading, setLoading] = useState(false);
+  const [failureMessage, setFailureMessage] = useState("");
 
   const handleSwitchTab = (tab) => setActiveTab(tab);
 
@@ -64,21 +71,52 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    
-    await new Promise((res) => {
-      setTimeout(() => {
-        res({ name, email, password });
-      }, 3000);
-    });
-    
-    // Reset form fields after submission
-    setName("");
-    setEmail("");
-    setPassword("");
-    setPasswordMessage("");
-    setIsPasswordStrong(false);
-    setLoading(false);
+
+    const endpoint = activeTab === "register" ? "signup" : "login";
+
+    const payload =
+      activeTab === "register"
+        ? { name, email, password }
+        : { email, password };
+
+    try {
+      const res = await axios.post(
+        `${import.meta.env.VITE_SERVER_URL}/api/user/${endpoint}`,
+        { ...payload }
+      );
+
+      if (res.data.success) {
+        setName("");
+        setEmail("");
+        setPassword("");
+        setPasswordMessage("");
+        setIsPasswordStrong(false);
+        console.log(res.data.message);
+      } else if (res.data.redirect) {
+        navigate(`/login?error=${encodeURIComponent(res.data.message)}`);
+        console.log(res.data.message.toString());
+      } else {
+        console.log(res.data.message);
+      }
+    } catch (error) {
+      console.log(
+        "An error occured in handleSubmit function in Login.jsx file",
+        error.message
+      );
+    } finally {
+      setLoading(false);
+    }
   };
+
+  useEffect(() => {
+    const searchParams = new URLSearchParams(location.search);
+    const error = searchParams.get("error");
+    if (error) setFailureMessage(error);
+  }, [location.search]);
+
+  if (auth) {
+    return <Navigate to="/dashboard" />;
+  }
 
   return (
     <div id="login" className="login">
@@ -93,6 +131,7 @@ const Login = () => {
             : "Start managing tasks with a few quick steps."}
         </p>
 
+        {failureMessage && <Message type="failure" text={failureMessage} />}
         <div id="login-switch" className="login__switch">
           <button
             onClick={() => handleSwitchTab("login")}
@@ -196,6 +235,23 @@ const Login = () => {
             </span>
           </button>
         </form>
+
+        <div className="login__divider">or</div>
+
+        <button
+          type="button"
+          className="login__oauth"
+          onClick={() =>
+            (window.location.href = `${import.meta.env.VITE_SERVER_URL}/google`)
+          }
+        >
+          <img
+            src="https://www.svgrepo.com/show/475656/google-color.svg"
+            alt="Google logo"
+            style={{ width: "20px", height: "20px", marginRight: "8px" }}
+          />
+          Continue with Google
+        </button>
       </div>
     </div>
   );

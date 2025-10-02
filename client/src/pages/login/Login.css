@@ -42,7 +42,18 @@
   margin-bottom: 32px;
 }
 
-/* Switch Buttons */
+.login__message {
+  background-color: #ffe6e6; /* light red/pink background for error */
+  color: #cc0000;           /* red text */
+  padding: 12px 16px;
+  margin-bottom: 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  text-align: center;
+  border: 1px solid #ff9999;
+  animation: fadeIn 0.4s ease-in-out;
+}
+
 .login__switch {
   display: flex;
   gap: 8px;
@@ -74,7 +85,7 @@
   opacity: 0.9;
 }
 
-/* Form */
+
 .login__form {
   display: flex;
   flex-direction: column;
@@ -149,7 +160,7 @@
   box-shadow: 0 0 0 3px rgba(173, 70, 255, 0.1);
 }
 
-/* Submit Button */
+
 .login__submit {
   display: flex;
   align-items: center;
@@ -188,7 +199,7 @@
   line-height: 1;
 }
 
-/* Divider */
+
 .login__divider {
   text-align: center;
   color: var(--muted-foreground);
@@ -215,7 +226,6 @@
   right: 0;
 }
 
-/* OAuth Button */
 .login__oauth {
   width: 100%;
   padding: 14px 24px;
@@ -234,7 +244,7 @@
   border-color: var(--primary);
 }
 
-/* Responsive Styles */
+
 @media (max-width: 640px) {
   .login-container {
     width: 100%;

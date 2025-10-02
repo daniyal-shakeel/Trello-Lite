@@ -1,4 +1,4 @@
- export const activities = [
+ export const activities = [ // activity page
     {
       id: 1,
       type: "create",

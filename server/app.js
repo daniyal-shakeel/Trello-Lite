@@ -1,0 +1,43 @@
+import express from "express";
+import "dotenv/config";
+import { connectDB } from "./config/db.js";
+import { redirectToGoogle, handleGoogleCallback } from "./controllers/user.js";
+import cors from "cors";
+import cookieParser from "cookie-parser";
+import { userRouter } from "./routes/user.js";
+import { userAuth } from "./middlewares/userAuth.js";
+
+const app = express();
+
+connectDB();
+app.use(cookieParser());
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(
+  cors({
+    origin: process.env.CLIENT_URI,
+    credentials: true,
+  })
+);
+
+app.get("/", (_, res) => {
+  res.send("API WORKING");
+});
+
+app.get("/check-auth", userAuth, (req, res) => {
+  return res.json({
+    success: true,
+    message: "Authentication successful",
+    payload: req.payload,
+  });
+});
+
+app.get("/google", redirectToGoogle);
+app.get("/google/callback", handleGoogleCallback);
+
+app.use("/api/user", userRouter);
+
+export const port = process.env.PORT || 3000;
+app.listen(port, () =>
+  console.log(`Server is running on http://localhost:${port}`)
+);

@@ -1,4 +1,4 @@
-export const BOARDS = [
+export const BOARDS = [ //sidebar
   { _id: "b1", name: "Personal" },
   { _id: "b2", name: "Gym" },
   { _id: "b3", name: "Work" },

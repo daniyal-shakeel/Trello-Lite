@@ -8,14 +8,22 @@ const Task = ({
   avatar = "SM",
   name = "Sara Miller",
   time = "1 day ago",
+  color = "#ff0b0bff",
 }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  useEffect(() => console.log(isModalOpen), [isModalOpen])
 
   return (
     <div onClick={() => setIsModalOpen(true)} id="task" className="task">
       {/* Task Content */}
-      <h1 className="task__title">{title}</h1>
+      <div className="task__header">
+        <span className="task__title">{title}</span>{" "}
+        <span
+          style={{
+            backgroundColor: color,
+          }}
+          className="task__title-flag"
+        ></span>
+      </div>
       <p className="task__description">{description}</p>
 
       {/* Footer */}
@@ -27,7 +35,13 @@ const Task = ({
         <p className="task__time">{time}</p>
       </div>
 
-      {isModalOpen && <OpenTask isOpen={isModalOpen} onClose={() => setIsModalOpen(false) } task={[]}/>}
+      {isModalOpen && (
+        <OpenTask
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          task={[]}
+        />
+      )}
     </div>
   );
 };

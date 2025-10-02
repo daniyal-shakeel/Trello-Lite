@@ -32,6 +32,7 @@ const BoardCard = ({ status = "To Do", tasks = [], taskLoading }) => {
             avatar={task?.avatar}
             name={task?.name}
             time={task?.time}
+            color={task?.color}
           />
         ))}
       </div>

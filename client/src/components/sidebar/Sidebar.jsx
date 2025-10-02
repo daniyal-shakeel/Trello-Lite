@@ -3,6 +3,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Plus,
+  Trash2,
   UserPlus,
 } from "lucide-react";
 import "./Sidebar.css";
@@ -10,14 +11,16 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import SidebarSkeleton from "../skeletons/sidebar/SidebarSkeleton.jsx";
 import AddCollaborator from "../modals/add-collaborators/AddCollaborator.jsx";
+import BoardDeleteConfirmationModal from "../modals/confirm/board-delete/BoardDeleteConfirmationModal.jsx";
 
 const Sidebar = ({ activeBoard, onBoardChange, boardLoading, boards }) => {
-  const [isOpen, setIsOpen] = useState(true);
+  const [isOpen, setIsOpen] = useState(true); // this is the state of the collapse sidebar
   const navigate = useNavigate();
   const [onAddBoard, setOnAddBoard] = useState(false);
   const [boardName, setBoardName] = useState("");
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false); // this is the state of add collaborators modal
   const [collaborators, setCollaborators] = useState([]);
+  const [showConfirmationModal, setShowConfirmationModal] = useState(false); // this is the state of board delete confirmation modal
 
   const handleToggle = () => {
     setIsOpen((prev) => !prev);
@@ -102,9 +105,13 @@ const Sidebar = ({ activeBoard, onBoardChange, boardLoading, boards }) => {
                   }`}
                 >
                   {board.name}
-                  <span className="sidebar__board-item-icon">
+                  <span className="sidebar__board-item-icons">
                     <UserPlus
                       onClick={handleAddBoardCollaboratorIconClick}
+                      width={20}
+                    />
+                    <Trash2
+                      onClick={() => setShowConfirmationModal(true)}
                       width={20}
                     />
                   </span>
@@ -151,6 +158,19 @@ const Sidebar = ({ activeBoard, onBoardChange, boardLoading, boards }) => {
             );
             // Example:
             // addCollaboratorsAPI(boardId, finalCollaborators);
+          }}
+        />
+      )}
+
+      {showConfirmationModal && (
+        <BoardDeleteConfirmationModal
+          title="My Board Name"
+          isOpen={showConfirmationModal}
+          onClose={() => setShowConfirmationModal(false)}
+          onConfirm={() => {
+            // Delete board logic here
+            console.log("Board deleted");
+            setShowConfirmationModal(false);
           }}
         />
       )}
