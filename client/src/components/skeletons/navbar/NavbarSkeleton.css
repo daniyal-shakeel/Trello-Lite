@@ -1,59 +1,59 @@
  .navbar-skeleton {
-            background: var(--background);
-            border-bottom: 1px solid var(--border);
-            padding: 16px 24px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-          }
+   background: var(--background);
+   border-bottom: 1px solid var(--border);
+   padding: 16px 24px;
+   display: flex;
+   justify-content: space-between;
+   align-items: center;
+ }
 
-          .navbar-left {
-            display: flex;
-            align-items: center;
-            gap: 24px;
-          }
+ .navbar-left {
+   display: flex;
+   align-items: center;
+   gap: 24px;
+ }
 
-          .skeleton-logo {
-            width: 150px;
-            height: 32px;
-          }
+ .skeleton-logo {
+   width: 150px;
+   height: 32px;
+ }
 
-          .skeleton-nav-item {
-            width: 120px;
-            height: 24px;
-          }
+ .skeleton-nav-item {
+   width: 120px;
+   height: 24px;
+ }
 
-          .navbar-right {
-            display: flex;
-            gap: 12px;
-          }
+ .navbar-right {
+   display: flex;
+   gap: 12px;
+ }
 
-          .skeleton-button {
-            width: 100px;
-            height: 36px;
-            border-radius: 6px;
-          }
+ .skeleton-button {
+   width: 100px;
+   height: 36px;
+   border-radius: 6px;
+ }
 
-          /* Content Area */
-          .content {
-            padding: 32px;
-          }
 
-          .boards-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 24px;
-            max-width: 1400px;
-          }
+ .content {
+   padding: 32px;
+ }
 
-          .column {
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-          }
+ .boards-grid {
+   display: grid;
+   grid-template-columns: repeat(3, 1fr);
+   gap: 24px;
+   max-width: 1400px;
+ }
 
-          .skeleton-column-header {
-            height: 40px;
-            width: 150px;
-            margin-bottom: 8px;
-          }
+ .column {
+   display: flex;
+   flex-direction: column;
+   gap: 16px;
+ }
+
+ .skeleton-column-header {
+   height: 40px;
+   width: 150px;
+   margin-bottom: 8px;
+ }

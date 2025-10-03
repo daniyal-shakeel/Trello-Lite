@@ -5,6 +5,7 @@ import {
   TOKEN_EXPIRY,
 } from "../utils/default-values/google.js";
 import { User } from "../models/user.js";
+import { Board } from "../models/board.js";
 import { generateToken } from "../utils/jwt.js";
 import { hashPassword, comparePassword } from "../utils/bcrypt.js";
 
@@ -13,7 +14,7 @@ function sendJwtAndClearCookies(res, user) {
   res.clearCookie("google_code_verifier");
 
   const token = generateToken({
-    id: user._id,
+    _id: user._id,
     email: user.email,
     name: user.name,
   });
@@ -25,8 +26,8 @@ function sendJwtAndClearCookies(res, user) {
     sameSite: "lax",
   };
 
-  res.cookie("token", cookieConfig);
-  return res.redirect("http://localhost:5173/dashboard");
+  res.cookie("token", token, cookieConfig);
+  return res.redirect(`${process.env.CLIENT_URI}/dashboard`);
 }
 
 const redirectToGoogle = async (_, res) => {
@@ -49,12 +50,11 @@ const redirectToGoogle = async (_, res) => {
     res.cookie("google_oauth_state", state, cookieConfig);
     res.cookie("google_code_verifier", codeVerifier, cookieConfig);
 
-    console.log(url.toString());
     res.redirect(url.toString());
   } catch (err) {
     console.error("An error occured in redirectToGoogle function", err.message);
     const message = encodeURIComponent("Failed to start Google login");
-    return res.redirect(`http://localhost:5173/login?error=${message}`);
+    return res.redirect(`${process.env.CLIENT_URI}/login?error=${message}`);
   }
 };
 
@@ -73,7 +73,7 @@ const handleGoogleCallback = async (req, res) => {
     state !== storedState
   ) {
     const message = encodeURIComponent("Invalid OAuth state or missing params");
-    return res.redirect(`http://localhost:5173/login?error=${message}`);
+    return res.redirect(`${process.env.CLIENT_URI}/login?error=${message}`);
   }
 
   let tokens;
@@ -84,7 +84,7 @@ const handleGoogleCallback = async (req, res) => {
     const message = encodeURIComponent(
       "Failed to validate Google authorization code"
     );
-    return res.redirect(`http://localhost:5173/login?error=${message}`);
+    return res.redirect(`${process.env.CLIENT_URI}/login?error=${message}`);
   }
 
   const claims = decodeIdToken(tokens.idToken());
@@ -101,7 +101,7 @@ const handleGoogleCallback = async (req, res) => {
       const message = encodeURIComponent(
         "Email already registered. Try another login method."
       );
-      return res.redirect(`http://localhost:5173/login?error=${message}`);
+      return res.redirect(`${process.env.CLIENT_URI}/login?error=${message}`);
     }
 
     if (!user) {
@@ -110,6 +110,12 @@ const handleGoogleCallback = async (req, res) => {
         email,
         googleId: googleUserId,
         avatar: picture,
+      });
+
+      await Board.create({
+        name: "My Board",
+        user: user._id,
+        isDefault: true,
       });
     }
 
@@ -120,7 +126,7 @@ const handleGoogleCallback = async (req, res) => {
       error.message
     );
     const message = encodeURIComponent("Something went wrong during login");
-    return res.redirect(`http://localhost:5173/login?error=${message}`);
+    return res.redirect(`${process.env.CLIENT_URI}/login?error=${message}`);
   }
 };
 
@@ -152,16 +158,24 @@ const signup = async (req, res) => {
     });
 
     const token = generateToken({
-      id: user._id,
+      _id: user._id,
       email: user.email,
       name: user.name,
     });
 
-    res.cookie("token", token, {
+    const cookieConfig = {
       httpOnly: true,
       secure: true,
       maxAge: TOKEN_EXPIRY,
       sameSite: "lax",
+    };
+
+    res.cookie("token", token, cookieConfig);
+
+    await Board.create({
+      name: "My Board",
+      user: user._id,
+      isDefault: true,
     });
 
     return res.json({
@@ -207,17 +221,19 @@ const login = async (req, res) => {
     }
 
     const token = generateToken({
-      id: user._id,
+      _id: user._id,
       email: user.email,
       name: user.name,
     });
 
-    res.cookie("token", token, {
+    const cookieConfig = {
       httpOnly: true,
       secure: true,
       maxAge: TOKEN_EXPIRY,
       sameSite: "lax",
-    });
+    };
+
+    res.cookie("token", token, cookieConfig);
 
     return res.json({
       success: true,
@@ -231,4 +247,23 @@ const login = async (req, res) => {
   }
 };
 
-export { redirectToGoogle, handleGoogleCallback, signup, login };
+const logout = async (_, res) => {
+  try {
+    res.clearCookie("token");
+    res.clearCookie("google_oauth_state");
+    res.clearCookie("google_code_verifier");
+
+    return res.json({
+      success: true,
+      message: "Logged out successfully",
+    });
+  } catch (err) {
+    console.error("An error occurred in logout function: ", err.message);
+    return res.json({
+      success: false,
+      message: "Something went wrong during logout",
+    });
+  }
+};
+
+export { redirectToGoogle, handleGoogleCallback, signup, login, logout };

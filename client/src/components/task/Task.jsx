@@ -14,7 +14,7 @@ const Task = ({
 
   return (
     <div onClick={() => setIsModalOpen(true)} id="task" className="task">
-      {/* Task Content */}
+      {}
       <div className="task__header">
         <span className="task__title">{title}</span>{" "}
         <span
@@ -26,7 +26,7 @@ const Task = ({
       </div>
       <p className="task__description">{description}</p>
 
-      {/* Footer */}
+      {}
       <div className="task__footer">
         <div className="task__user">
           <div className="task__avatar">{avatar}</div>

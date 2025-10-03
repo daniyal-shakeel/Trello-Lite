@@ -1,78 +1,133 @@
 import BoardCard from "../../components/board-cards/BoardCard";
 import Navbar from "../../components/navbar/Navbar";
 import Sidebar from "../../components/sidebar/Sidebar";
-import { TASKS } from "../../assets/data/tasks";
-import { BOARDS } from "../../assets/data/boards";
 import "./Dashboard.css";
 import { useState, useMemo, useEffect } from "react";
+import axios from "axios";
 
-const Dashboard = () => {
-  const [activeBoard, setActiveBoard] = useState(BOARDS[0]?._id || null);
+const Dashboard = ({ setAuth, user }) => {
+  const [activeBoard, setActiveBoard] = useState(null);
   const [taskLoading, setTaskLoading] = useState(true);
   const [boardLoading, setBoardLoading] = useState(true);
   const [tasks, setTasks] = useState([]);
   const [boards, setBoards] = useState([]);
+  const [activeStatus, setActiveStatus] = useState("active");
 
-  const filteredTasks = useMemo(() => {
-    return tasks.filter((task) => task.boardId === activeBoard);
-  }, [tasks, activeBoard]);
+  const activeBoards = useMemo(() => {
+    return boards.filter((board) => board.status === "active");
+  }, [boards]);
 
-  const statuses = useMemo(() => {
-    return [...new Set(filteredTasks.map((task) => task.status))];
-  }, [filteredTasks]);
+  useEffect(() => {
+    if (boards.length > 0) {
+      if (!activeBoard || !boards.find((b) => b._id === activeBoard)) {
+        setActiveBoard(boards[0]._id);
+      }
+    } else {
+      setActiveBoard(null);
+    }
+  }, [boards, activeBoard]);
 
-  const activeBoardData = BOARDS.find((board) => board._id === activeBoard);
+  const filteredBoards = useMemo(() => {
+    if (activeStatus === "all") return boards;
+    return boards.filter((board) => board.status === activeStatus);
+  }, [boards, activeStatus]);
+
+  useEffect(() => console.log(boards), [boards]);
 
   const handleBoardChange = (boardId) => {
     setActiveBoard(boardId);
   };
 
-  useEffect(() => {
-    setTaskLoading(true);
-    const timer = setTimeout(() => {
-      setTasks(TASKS);
-      setTaskLoading(false);
-    }, 1000);
-    return () => clearTimeout(timer);
-  }, []);
-
-  useEffect(() => {
+  const getAllBoards = async () => {
     setBoardLoading(true);
-    const timer = setTimeout(() => {
-      setBoards(BOARDS);
+    try {
+      const res = await axios.get(
+        `${import.meta.env.VITE_SERVER_URL}/api/board/get-all-boards`,
+        { withCredentials: true }
+      );
+
+      if (res.data.success) {
+        setBoards(res.data.boards || []);
+      } else {
+        console.error("Failed to fetch boards:", res.data.message);
+        setBoards([]);
+      }
+    } catch (error) {
+      console.error("An error occurred in getAllBoards:", error.message);
+      setBoards([]);
+    } finally {
       setBoardLoading(false);
-    }, 2000);
-    return () => clearTimeout(timer);
+    }
+  };
+
+  const getAllTasks = async () => {
+    setTaskLoading(true);
+    try {
+      const res = await axios.get(
+        `${import.meta.env.VITE_SERVER_URL}/api/task/get-all-tasks`,
+        { withCredentials: true }
+      );
+
+      if (res.data.success) {
+        setTasks(res.data.tasks || []);
+      } else {
+        console.error("Failed to fetch tasks:", res.data.message);
+        setTasks([]);
+      }
+    } catch (error) {
+      console.error("An error occurred in getAllTasks: ", error.message);
+      setTasks([]);
+    } finally {
+      setTaskLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    getAllBoards();
   }, []);
 
-  // Placeholder statuses for skeletons
-  const statusesToRender = taskLoading
-    ? ["To Do", "In Progress", "Done"]
-    : statuses;
+  useEffect(() => {
+    getAllTasks();
+  }, []);
+
+  useEffect(() => console.log(activeBoard), [activeBoard]);
 
   return (
     <div id="dashboard-layout" className="dashboard-layout">
       <Sidebar
+        getAllBoards={getAllBoards}
+        setAuth={setAuth}
         activeBoard={activeBoard}
         onBoardChange={handleBoardChange}
         boardLoading={boardLoading}
-        boards={boards}
+        boards={filteredBoards}
+        user={user}
+        setBoards={setBoards}
       />
       <div className="dashboard-main">
         <Navbar
           taskLoading={taskLoading}
-          boardName={activeBoardData?.name}
-          boardDescription={activeBoardData?.description}
+          statuses={["active", "draft", "archived"]}
+          activeStatus={activeStatus}
+          onStatusChange={setActiveStatus}
         />
         <div id="dashboard" className="dashboard">
-          {statusesToRender.map((status) => (
-            <BoardCard
-              key={status}
-              status={status}
-              tasks={filteredTasks}
-              taskLoading={taskLoading}
-            />
-          ))}
+          {filteredBoards.length > 0 ? (
+            filteredBoards.map((board) => (
+              <BoardCard
+                key={board._id}
+                boardId={board._id}
+                name={board.name}
+                status={board.status}
+                tasks={tasks.filter((task) => task.boardId === board._id)}
+                taskLoading={taskLoading}
+              />
+            ))
+          ) : (
+            <p className="empty-message">
+              No boards found for "{activeStatus}"
+            </p>
+          )}
         </div>
       </div>
     </div>

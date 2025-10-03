@@ -46,6 +46,7 @@ const Login = ({ auth }) => {
     const hasUpper = /[A-Z]/.test(pwd);
     const hasNumber = /[0-9]/.test(pwd);
     const hasSpecial = /[!@#$%^&*(),.?":{}|<>]/.test(pwd);
+    const hasMinLength = pwd.length >= 8;
 
     if (!hasLower) {
       setPasswordMessage("At least one lowercase letter required");
@@ -63,8 +64,12 @@ const Login = ({ auth }) => {
       setPasswordMessage("At least one special character required");
       return setIsPasswordStrong(false);
     }
+    if (!hasMinLength) {
+      setPasswordMessage("Password must be at least 8 characters long");
+      return setIsPasswordStrong(false);
+    }
 
-    setPasswordMessage("Strong password ✅");
+    setPasswordMessage("Strong password. You can move on");
     setIsPasswordStrong(true);
   };
 

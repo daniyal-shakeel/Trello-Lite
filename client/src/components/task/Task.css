@@ -1,4 +1,3 @@
-/* Task.css */
 .task {
   background-color: var(--popover);
   border: 1px solid var(--border);
@@ -16,7 +15,7 @@
   box-shadow: 0 4px 12px rgba(173, 70, 255, 0.1);
 }
 
-.task__header{
+.task__header {
   position: relative;
   width: 100%;
   display: flex;
@@ -24,7 +23,7 @@
   justify-content: space-between;
 }
 
-/* Task Content */
+
 .task__title {
   font-size: 17px;
   font-weight: 600;
@@ -33,9 +32,10 @@
   line-height: 1.4;
 }
 
-.task__title-flag{
+.task__title-flag {
   width: 15px;
-  height: 15px;border-radius: 100%;
+  height: 15px;
+  border-radius: 100%;
 }
 
 .task__description {
@@ -46,7 +46,7 @@
   line-height: 1.5;
 }
 
-/* Footer */
+
 .task__footer {
   display: flex;
   align-items: center;
@@ -90,7 +90,7 @@
   white-space: nowrap;
 }
 
-/* Responsive */
+
 @media (max-width: 480px) {
   .task {
     padding: 16px;

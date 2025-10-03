@@ -5,6 +5,7 @@ import { redirectToGoogle, handleGoogleCallback } from "./controllers/user.js";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import { userRouter } from "./routes/user.js";
+import { boardRouter } from "./routes/board.js";
 import { userAuth } from "./middlewares/userAuth.js";
 
 const app = express();
@@ -28,7 +29,7 @@ app.get("/check-auth", userAuth, (req, res) => {
   return res.json({
     success: true,
     message: "Authentication successful",
-    payload: req.payload,
+    user: req.payload,
   });
 });
 
@@ -36,6 +37,7 @@ app.get("/google", redirectToGoogle);
 app.get("/google/callback", handleGoogleCallback);
 
 app.use("/api/user", userRouter);
+app.use("/api/board", boardRouter);
 
 export const port = process.env.PORT || 3000;
 app.listen(port, () =>

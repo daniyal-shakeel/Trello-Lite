@@ -1,4 +1,4 @@
-/* Modal Overlay */
+
 .modal-overlay {
   position: fixed;
   inset: 0;
@@ -9,7 +9,7 @@
   z-index: 999;
 }
 
-/* Modal Container */
+
 .modal-container {
   background-color: var(--card);
   color: var(--card-foreground);
@@ -23,7 +23,7 @@
   gap: 16px;
 }
 
-/* Modal Header */
+
 .modal-header {
   display: flex;
   justify-content: space-between;
@@ -40,14 +40,14 @@
   color: var(--destructive);
 }
 
-/* Modal Body */
+
 .modal-body {
   display: flex;
   flex-direction: column;
   gap: 12px;
 }
 
-/* Input with arrow button */
+
 .input-with-btn {
   position: relative;
   display: flex;
@@ -56,7 +56,7 @@
 
 .modal-input {
   width: 100%;
-  padding: 8px 40px 8px 12px; /* right padding for arrow button */
+  padding: 8px 40px 8px 12px; 
   border-radius: var(--radius);
   border: 1px solid var(--border);
   background-color: var(--input);
@@ -71,7 +71,7 @@
   box-shadow: 0 0 0 2px rgba(173, 70, 255, 0.2);
 }
 
-/* Arrow button inside input */
+
 .modal-input-btn {
   position: absolute;
   right: 8px;
@@ -91,7 +91,7 @@
   opacity: 0.85;
 }
 
-/* Collaborators list */
+
 .collaborators-list {
   list-style: none;
   padding: 0;
@@ -127,7 +127,7 @@
   opacity: 0.75;
 }
 
-/* Modal Footer */
+
 .modal-footer {
   display: flex;
   justify-content: flex-end;

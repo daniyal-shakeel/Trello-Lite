@@ -1,7 +1,6 @@
-import "./BoardCardSkeleton.css"
+import "./BoardCardSkeleton.css";
 
 const BoardCardSkeleton = () => {
-
   return (
     <div className="board-card-skeleton">
       <div className="card-header">

@@ -16,13 +16,13 @@ const AddCollaborator = ({
   const handleAdd = () => {
     if (!input.trim()) return;
 
-    // Split multiple emails/usernames by comma
+    
     const newCollaborators = input
       .split(",")
       .map((c) => c.trim())
       .filter(Boolean);
 
-    // Append to existing collaborators
+    
     setCollaborators([...collaborators, ...newCollaborators]);
     setInput("");
   };
@@ -33,8 +33,8 @@ const AddCollaborator = ({
 
   const handleConfirm = () => {
     if (collaborators.length === 0) return;
-    onConfirm(collaborators); // Call the API or parent callback
-    onClose(); // Close modal
+    onConfirm(collaborators); 
+    onClose(); 
   };
 
   return (
@@ -66,7 +66,7 @@ const AddCollaborator = ({
             </button>
           </div>
 
-          {/* List of added collaborators */}
+          {}
           {collaborators.length > 0 && (
             <ul className="collaborators-list">
               {collaborators.map((c, i) => (

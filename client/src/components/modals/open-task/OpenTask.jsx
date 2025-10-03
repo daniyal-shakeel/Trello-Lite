@@ -24,7 +24,7 @@ const OpenTask = ({ isOpen = true, onClose = () => {}, task = {} }) => {
   return (
     <div className="open-task-overlay" onClick={onClose}>
       <div className="open-task-container" onClick={(e) => e.stopPropagation()}>
-        {/* Header */}
+        {}
         <div className="open-task-header">
           <div className="open-task-header-content">
             <h2 className="open-task-title">
@@ -82,7 +82,7 @@ const OpenTask = ({ isOpen = true, onClose = () => {}, task = {} }) => {
           </div>
         </div>
 
-        {/* Tabs */}
+        {}
         <div className="open-task-tabs">
           <button
             className={`tab ${activeTab === "comments" ? "active" : ""}`}
@@ -98,9 +98,9 @@ const OpenTask = ({ isOpen = true, onClose = () => {}, task = {} }) => {
           </button>
         </div>
 
-        {/* Content Area */}
+        {}
         <div className="open-task-content">
-          {/* Comments Section */}
+          {}
           {activeTab === "comments" && (
             <div className="open-task-comments">
               {comments.map((c, i) => (
@@ -157,7 +157,7 @@ const OpenTask = ({ isOpen = true, onClose = () => {}, task = {} }) => {
                 </div>
               ))}
 
-              {/* Add new comment */}
+              {}
               <div className="add-comment">
                 <div className="comment-avatar">JD</div>
                 <div className="add-comment-wrapper">
@@ -172,7 +172,7 @@ const OpenTask = ({ isOpen = true, onClose = () => {}, task = {} }) => {
             </div>
           )}
 
-          {/* Activity Section */}
+          {}
           {activeTab === "activity" && (
             <div className="open-task-activities">
               {mockActivities.map((a, i) => (
@@ -190,7 +190,7 @@ const OpenTask = ({ isOpen = true, onClose = () => {}, task = {} }) => {
           )}
         </div>
 
-        {/* Footer - Post Comment Button */}
+        {}
         {activeTab === "comments" && (
           <div className="open-task-footer">
             <button

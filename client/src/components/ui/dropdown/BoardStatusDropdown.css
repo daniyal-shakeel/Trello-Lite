@@ -1,0 +1,49 @@
+.board-status-dropdown {
+     position: absolute;
+     top: 2rem;
+     right: 2rem;
+     background: var(--card);
+     color: var(--card-foreground);
+     border: 1px solid var(--border);
+     border-radius: var(--radius);
+     box-shadow: var(--shadow-lg);
+     z-index: 10;
+     min-width: 160px;
+     animation: fadeIn 0.2s ease-in-out;
+}
+
+.board-status-dropdown .dropdown-menu {
+     display: flex;
+     flex-direction: column;
+}
+
+.board-status-dropdown .dropdown-header {
+     padding: 0.5rem 1rem;
+     font-size: 0.8rem;
+     color: var(--muted-foreground);
+     border-bottom: 1px solid var(--border);
+}
+
+.board-status-dropdown .dropdown-item {
+     padding: 0.6rem 1rem;
+     cursor: pointer;
+     transition: var(--transition);
+}
+
+.board-status-dropdown .dropdown-item:hover {
+     background: var(--muted);
+}
+
+.board-status-dropdown .dropdown-item.active {
+     color: var(--primary);
+     font-weight: 600;
+}
+
+.board-status-dropdown .dot {
+     display: inline-block;
+     width: 6px;
+     height: 6px;
+     margin-right: 6px;
+     border-radius: 50%;
+     background: var(--primary);
+}

@@ -12,7 +12,7 @@ const userAuth = (req, res, next) => {
     }
 
     const payload = verifyToken(token, process.env.JWT_SECRET);
-    req.user = payload;
+    req.payload = payload;
     next();
   } catch (err) {
     console.error("Authentication failed:", err.message);

@@ -25,13 +25,11 @@ const CTA_BUTTONS = () => {
 const Home = () => {
   return (
     <div id="home" className="home">
-      {/* Navbar Section */}
       <div id="home-navbar" className="home__navbar">
         <h1 className="home__title">TrelloLite</h1>
         <CTA_BUTTONS />
       </div>
 
-      {/* Hero Section */}
       <div id="home-hero" className="home__hero">
         <h1 className="home__hero-title">
           Organize tasks effortlessly with a clean, dark interface
@@ -43,12 +41,10 @@ const Home = () => {
         <CTA_BUTTONS />
       </div>
 
-      {/* Picture Section */}
       <div id="home-picture" className="home__picture">
         <img className="home__picture-img" src={trelloHome} alt="trello-home" />
       </div>
 
-      {/* Features Section */}
       <div id="home-features" className="home__features">
         <h1 className="home__features-title">Built for focus</h1>
         <p className="home__features-description">
@@ -65,7 +61,6 @@ const Home = () => {
         </div>
       </div>
 
-      {/* Footer */}
       <div id="home-footer" className="home__footer">
         <div className="home__footer-cta">
           <h1 className="home__footer-title">Ready to get organized?</h1>
@@ -76,7 +71,6 @@ const Home = () => {
         <CTA_BUTTONS />
       </div>
 
-      {/* Copyright Section */}
       <div id="home-copyright" className="home__copyright">
         <p className="home__copyright-text">
           © 2023 TrelloLite. All rights reserved.

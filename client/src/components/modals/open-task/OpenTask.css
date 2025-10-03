@@ -423,7 +423,7 @@
   font-size: 0.85rem;
 }
 
-/* Scrollbar Styling */
+
 .open-task-content::-webkit-scrollbar {
   width: 8px;
 }

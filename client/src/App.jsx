@@ -10,6 +10,7 @@ import { useEffect } from "react";
 
 const App = () => {
   const [auth, setAuth] = useState(null);
+  const [user, setUser] = useState(null);
   const [successMessage, setSuccessMessage] = useState("");
   const [failureMessage, setFailureMessage] = useState("");
   const checkAuth = async () => {
@@ -21,6 +22,7 @@ const App = () => {
       if (res.data.success) {
         console.log(res.data.message);
         setAuth(true);
+        setUser(res.data.user);
       } else {
         console.log(res.data.message);
         setAuth(false);
@@ -37,7 +39,6 @@ const App = () => {
     checkAuth();
   }, []);
 
-  useEffect(() => console.log(auth), [auth])
   return (
     <div>
       <Routes>
@@ -46,7 +47,7 @@ const App = () => {
           path="/dashboard"
           element={
             <AuthRoute auth={auth}>
-              <Dashboard />
+              <Dashboard user={user} setAuth={setAuth} />
             </AuthRoute>
           }
         />
@@ -54,7 +55,7 @@ const App = () => {
           path="/login"
           element={
             <Login
-            auth={auth}
+              auth={auth}
               successMessage={successMessage}
               setSuccessMessage={setSuccessMessage}
               failureMessage={failureMessage}

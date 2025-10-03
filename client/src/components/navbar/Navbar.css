@@ -9,7 +9,7 @@
   gap: 24px;
 }
 
-/* Left Section */
+
 .navbar__info {
   display: flex;
   flex-direction: column;
@@ -30,7 +30,46 @@
   margin: 0;
 }
 
-/* Right Section - Add Task Button */
+
+.navbar__actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+
+}
+
+.navbar__actions-dropdown {
+  position: relative;
+}
+
+
+.board-status-dropdown .dropdown-toggle {
+  background: var(--card);
+  border: 1px solid var(--border);
+  padding: 10px 16px;
+  border-radius: var(--radius);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--foreground);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.board-status-dropdown .dropdown-toggle:hover {
+  background: var(--popover);
+}
+
+.board-status-dropdown .dropdown-menu {
+  margin-top: 6px;
+  right: 0;
+
+  left: auto;
+}
+
+
 .navbar__add-task {
   display: flex;
   align-items: center;
@@ -65,7 +104,43 @@
   line-height: 1;
 }
 
-/* Responsive */
+.navbar__change-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  background-color: var(--card);
+  color: var(--foreground);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s, transform 0.2s;
+  white-space: nowrap;
+  transform: translateZ(0);
+  will-change: transform;
+}
+
+.navbar__change-status:hover {
+  background-color: var(--popover);
+  transform: translateY(-1px);
+}
+
+.navbar__change-status:active {
+  transform: translateY(0);
+}
+
+.navbar__change-status-icon {
+  width: 20px;
+  height: 20px;
+}
+
+.navbar__change-status-text {
+  line-height: 1;
+}
+
+
 @media (max-width: 768px) {
   .navbar {
     padding: 20px 24px;

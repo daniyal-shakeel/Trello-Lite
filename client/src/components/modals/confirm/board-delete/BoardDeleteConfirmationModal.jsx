@@ -1,12 +1,45 @@
+import { useState } from "react";
 import { AlertTriangle } from "lucide-react";
-import "./BoardDeleteConfirmationModal..css";
+import axios from "axios";
+import "./BoardDeleteConfirmationModal.css";
+import Message from "../../../ui/message/Message";
+
 const BoardDeleteConfirmationModal = ({
   title,
+  boardId,
+  activeBoard,
+  onBoardChange,
+  setBoards,
   isOpen = true,
   onClose,
-  onConfirm,
 }) => {
+  const [message, setMessage] = useState("");
+  const [messageType, setMessageType] = useState("");
+
   if (!isOpen) return null;
+
+  const handleDelete = async () => {
+    try {
+      const res = await axios.delete(
+        `${import.meta.env.VITE_SERVER_URL}/api/board/delete-board/${boardId}`,
+        { withCredentials: true }
+      );
+      console.log(res.data);
+
+      if (res.data.success) {
+        setBoards((prev) => prev.filter((b) => b._id !== boardId));
+        if (activeBoard === boardId) onBoardChange(null);
+        onClose()
+      } else {
+        setMessage(res.data.message || "Failed to delete board");
+        setMessageType("failure");
+      }
+    } catch (error) {
+      console.error("Delete board error:", error.message);
+      setMessage("An error occurred while deleting board");
+      setMessageType("error");
+    }
+  };
 
   return (
     <div className="delete-modal-overlay" onClick={onClose}>
@@ -22,15 +55,21 @@ const BoardDeleteConfirmationModal = ({
 
         <p className="delete-modal-message">
           Are you sure you want to delete <strong>"{title}"</strong> board? This
-          action cannot be undone and will remove all tasks, comments and
+          action cannot be undone and will remove all tasks, comments, and
           activity history.
         </p>
+
+        {}
+        <Message type={messageType} text={message} />
 
         <div className="delete-modal-actions">
           <button className="delete-modal-btn cancel-btn" onClick={onClose}>
             Cancel
           </button>
-          <button className="delete-modal-btn confirm-btn" onClick={onConfirm}>
+          <button
+            className="delete-modal-btn confirm-btn"
+            onClick={handleDelete}
+          >
             Delete
           </button>
         </div>

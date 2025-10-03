@@ -1,4 +1,4 @@
-import "./NavbarSkeleton.css"
+import "./NavbarSkeleton.css";
 const NavbarSkeleton = () => {
   return (
     <nav className="navbar-skeleton">

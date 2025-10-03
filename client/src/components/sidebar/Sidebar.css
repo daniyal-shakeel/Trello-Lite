@@ -1,13 +1,14 @@
 .sidebar {
   width: 320px;
-  min-height: 100vh;
+  height: 100vh;
   background-color: var(--sidebar);
   color: var(--sidebar-foreground);
   display: flex;
   flex-direction: column;
   padding: 24px 16px;
   border-right: 1px solid var(--border);
-  position: relative;
+  position: sticky;
+  top: 0;
   transition: var(--transition);
 }
 
@@ -158,6 +159,7 @@
   color: var(--primary);
 }
 
+
 .sidebar__boards-list {
   list-style: none;
   padding: 0;
@@ -165,6 +167,24 @@
   display: flex;
   flex-direction: column;
   gap: 4px;
+  max-height: 250px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--muted-foreground) transparent;
+}
+
+
+.sidebar__boards-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.sidebar__boards-list::-webkit-scrollbar-thumb {
+  background-color: var(--muted-foreground);
+  border-radius: 10px;
+}
+
+.sidebar__boards-list::-webkit-scrollbar-track {
+  background: transparent;
 }
 
 .sidebar__board-item {
@@ -179,7 +199,6 @@
   align-items: center;
   gap: 12px;
   white-space: nowrap;
-  overflow: hidden;
   user-select: none;
 }
 
@@ -294,6 +313,29 @@
   white-space: nowrap;
 }
 
+.sidebar__logout-btn {
+  margin-top: 12px;
+  width: 100%;
+  padding: 10px 16px;
+  border: none;
+  border-radius: var(--radius);
+  background-color: var(--secondary);
+  color: var(--sidebar-foreground);
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.sidebar__logout-btn:hover {
+  background-color: var(--primary);
+  color: var(--foreground);
+  transform: scale(1.02);
+}
+
+.sidebar__logout-btn:active {
+  transform: scale(0.97);
+}
 
 .sidebar__toggle-btn {
   position: absolute;
