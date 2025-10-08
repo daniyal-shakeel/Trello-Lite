@@ -15,6 +15,7 @@ import BoardDeleteConfirmationModal from "../modals/confirm/board-delete/BoardDe
 import axios from "axios";
 import Message from "../ui/message/Message.jsx";
 import { getInitials } from "../../utils/getInitials.js";
+import Tooltip from "../ui/tooltip/Tooltip.jsx";
 
 const Sidebar = ({
   activeBoard,
@@ -35,6 +36,8 @@ const Sidebar = ({
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
   const [boardToDelete, setBoardToDelete] = useState(null);
   const [error, setError] = useState("");
+
+  const [tooltip, setTooltip] = useState(false);
 
   const inputRef = useRef(null);
   const wrapperRef = useRef(null);
@@ -83,6 +86,39 @@ const Sidebar = ({
       }
     } catch (error) {
       setError(error.message || "An error occurred while creating the board.");
+    }
+  };
+
+  const addCollaborators = async (boardId, collaborators) => {
+    console.log(boardId);
+    try {
+      const res = await axios.post(
+        `${
+          import.meta.env.VITE_SERVER_URL
+        }/api/board/collaborators/add/${boardId}`,
+        { collaborators },
+        { withCredentials: true }
+      );
+
+      if (res.data.success) {
+        console.log("Collaborators added:", res.data.message);
+        setBoards((prev) =>
+          prev.map((b) =>
+            b._id === boardId
+              ? { ...b, collaborators: res.data.collaborators }
+              : b
+          )
+        );
+
+        setCollaborators([]);
+        return true;
+      } else {
+        console.error("Failed to add collaborators:", res.data.message);
+        return false;
+      }
+    } catch (error) {
+      console.error("An error occurred in AddCollaborators:", error.message);
+      return false;
     }
   };
 
@@ -138,7 +174,16 @@ const Sidebar = ({
                     className="sidebar__boards-input"
                     value={boardName}
                     onChange={(e) => setBoardName(e.target.value)}
-                    onKeyDown={(e) => e.key === "Enter" && createBoard()}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") createBoard();
+                      if (e.key === "Escape") {
+                        setOnAddBoard(false);
+                        setBoardName("");
+                        setError("");
+                      }
+                    }}
+                    onMouseOver={() => setTooltip(true)}
+                    onMouseLeave={() => setTooltip(false)}
                   />
                   <button
                     className="sidebar__boards-input-btn"
@@ -146,6 +191,12 @@ const Sidebar = ({
                   >
                     ➔
                   </button>
+                  {tooltip && (
+                    <Tooltip
+                      text="Press Enter to save, Esc to cancel"
+                      visible={tooltip}
+                    />
+                  )}
                 </div>
               ) : (
                 <Plus
@@ -239,12 +290,11 @@ const Sidebar = ({
           onClose={() => setIsModalOpen(false)}
           collaborators={collaborators}
           setCollaborators={setCollaborators}
-          onConfirm={(finalCollaborators) => {
-            console.log("Send to API:", {
-              boardId: selectedBoard._id,
-              finalCollaborators,
-            });
-            setIsModalOpen(false);
+          onConfirm={async (finalCollaborators) => {
+            return await addCollaborators(
+              selectedBoard._id,
+              finalCollaborators
+            );
           }}
         />
       )}

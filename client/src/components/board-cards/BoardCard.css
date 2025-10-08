@@ -10,8 +10,30 @@
   display: flex;
   flex-direction: column;
   gap: 16px;
+  user-select: none;
 }
 
+.board__drag-icon-container{
+  position: relative;
+}
+
+.board__drag-icon-container:active {
+  cursor: grabbing;
+}
+
+.board__drag-icon{
+position: absolute;
+  right: 50%;
+  top: -31px;
+  color: var(--secondary);
+  transition: var(--transition);
+  transform: rotate(90deg);
+  cursor:grab;
+}
+
+.board__drag-icon:hover{
+  color: var(--foreground);
+}
 
 .board__header {
   display: flex;

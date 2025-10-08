@@ -1,4 +1,4 @@
-.message {
+.message-full {
     padding: 12px 16px;
     margin-bottom: 16px;
     border-radius: 8px;
@@ -7,14 +7,31 @@
     animation: fadeIn 0.4s ease-in-out;
 }
 
-.message--success {
+.message-compact {
+    font-size: 14px;
+    text-align: center;
+    animation: fadeIn 0.4s ease-in-out;
+}
+
+.message--success--full {
     background-color: #e6ffed;
     color: #2e7d32;
     border: 1px solid #a5d6a7;
 }
 
-.message--failure {
+.message--success--compact {
+    margin-top: 5px;
+    color: #2e7d32;
+}
+
+.message--failure--full {
     background-color: #ffe6e6;
     color: #cc0000;
     border: 1px solid #ff9999;
+}
+
+.message--failure--compact {
+    margin-top: 5px;
+    color: #cc0000;
+
 }

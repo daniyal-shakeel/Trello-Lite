@@ -7,8 +7,11 @@ import cookieParser from "cookie-parser";
 import { userRouter } from "./routes/user.js";
 import { boardRouter } from "./routes/board.js";
 import { userAuth } from "./middlewares/userAuth.js";
+import { taskRouter } from "./routes/task.js";
+import { commentRouter } from "./routes/comment.js";
 
 const app = express();
+export const port = process.env.PORT || 3000;
 
 connectDB();
 app.use(cookieParser());
@@ -16,7 +19,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(
   cors({
-    origin: process.env.CLIENT_URI,
+    origin: [process.env.CLIENT_URI],
     credentials: true,
   })
 );
@@ -37,9 +40,10 @@ app.get("/google", redirectToGoogle);
 app.get("/google/callback", handleGoogleCallback);
 
 app.use("/api/user", userRouter);
-app.use("/api/board", boardRouter);
+app.use("/api/board", userAuth, boardRouter);
+app.use("/api/task", userAuth, taskRouter);
+app.use("/api/comment", userAuth, commentRouter);
 
-export const port = process.env.PORT || 3000;
 app.listen(port, () =>
   console.log(`Server is running on http://localhost:${port}`)
 );

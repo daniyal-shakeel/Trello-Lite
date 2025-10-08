@@ -4,6 +4,7 @@ import Sidebar from "../../components/sidebar/Sidebar";
 import "./Dashboard.css";
 import { useState, useMemo, useEffect } from "react";
 import axios from "axios";
+import BoardCardSkeleton from "../../components/skeletons/board-card/BoardCardSkeleton";
 
 const Dashboard = ({ setAuth, user }) => {
   const [activeBoard, setActiveBoard] = useState(null);
@@ -12,10 +13,6 @@ const Dashboard = ({ setAuth, user }) => {
   const [tasks, setTasks] = useState([]);
   const [boards, setBoards] = useState([]);
   const [activeStatus, setActiveStatus] = useState("active");
-
-  const activeBoards = useMemo(() => {
-    return boards.filter((board) => board.status === "active");
-  }, [boards]);
 
   useEffect(() => {
     if (boards.length > 0) {
@@ -64,7 +61,9 @@ const Dashboard = ({ setAuth, user }) => {
     setTaskLoading(true);
     try {
       const res = await axios.get(
-        `${import.meta.env.VITE_SERVER_URL}/api/task/get-all-tasks`,
+        `${
+          import.meta.env.VITE_SERVER_URL
+        }/api/task/get-all-tasks/${activeBoard}`,
         { withCredentials: true }
       );
 
@@ -87,10 +86,12 @@ const Dashboard = ({ setAuth, user }) => {
   }, []);
 
   useEffect(() => {
-    getAllTasks();
-  }, []);
+    if (activeBoard) {
+      getAllTasks();
+    }
+  }, [activeBoard]);
 
-  useEffect(() => console.log(activeBoard), [activeBoard]);
+  useEffect(() => console.log("Tasks: ", tasks), [tasks]);
 
   return (
     <div id="dashboard-layout" className="dashboard-layout">
@@ -106,13 +107,21 @@ const Dashboard = ({ setAuth, user }) => {
       />
       <div className="dashboard-main">
         <Navbar
+          tasks={tasks}
+          setTasks={setTasks}
+          activeBoard={activeBoard}
+          boards={boards}
           taskLoading={taskLoading}
           statuses={["active", "draft", "archived"]}
           activeStatus={activeStatus}
           onStatusChange={setActiveStatus}
         />
         <div id="dashboard" className="dashboard">
-          {filteredBoards.length > 0 ? (
+          {boardLoading ? (
+            Array.from({ length: 3 }).map((_, index) => (
+              <BoardCardSkeleton key={index} />
+            ))
+          ) : filteredBoards.length > 0 ? (
             filteredBoards.map((board) => (
               <BoardCard
                 key={board._id}
@@ -120,7 +129,8 @@ const Dashboard = ({ setAuth, user }) => {
                 name={board.name}
                 status={board.status}
                 tasks={tasks.filter((task) => task.boardId === board._id)}
-                taskLoading={taskLoading}
+                setTasks={setTasks}
+                loading={taskLoading}
               />
             ))
           ) : (

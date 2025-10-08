@@ -4,14 +4,17 @@ import {
   getAllBoards,
   deleteBoard,
   changeStatus,
+  addCollaborators,
+  getBoard,
 } from "../controllers/board.js";
-import { userAuth } from "../middlewares/userAuth.js";
 
 const boardRouter = express.Router();
 
-boardRouter.post("/create-board", userAuth, createBoard);
-boardRouter.get("/get-all-boards", userAuth, getAllBoards);
-boardRouter.delete("/delete-board/:id", userAuth, deleteBoard);
-boardRouter.post("/change-status/:status", userAuth, changeStatus);
+boardRouter.post("/create-board", createBoard);
+boardRouter.get("/get-all-boards", getAllBoards);
+boardRouter.get("/get-board/:boardId", getBoard);
+boardRouter.delete("/delete-board/:id", deleteBoard);
+boardRouter.post("/change-status/:status", changeStatus);
+boardRouter.post("/collaborators/add/:boardId", addCollaborators);
 
 export { boardRouter };

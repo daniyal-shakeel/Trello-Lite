@@ -25,6 +25,7 @@ const Login = ({ auth }) => {
 
   const [loading, setLoading] = useState(false);
   const [failureMessage, setFailureMessage] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
 
   const handleSwitchTab = (tab) => setActiveTab(tab);
 
@@ -87,7 +88,8 @@ const Login = ({ auth }) => {
     try {
       const res = await axios.post(
         `${import.meta.env.VITE_SERVER_URL}/api/user/${endpoint}`,
-        { ...payload }
+        { ...payload },
+        { withCredentials: true }
       );
 
       if (res.data.success) {
@@ -96,11 +98,18 @@ const Login = ({ auth }) => {
         setPassword("");
         setPasswordMessage("");
         setIsPasswordStrong(false);
-        console.log(res.data.message);
+        setSuccessMessage(
+          "success",
+          "Account created successfully! Please log in."
+        );
       } else if (res.data.redirect) {
         navigate(`/login?error=${encodeURIComponent(res.data.message)}`);
         console.log(res.data.message.toString());
       } else {
+        setFailureMessage(
+          "failure",
+          res.data.message || "Something went wrong."
+        );
         console.log(res.data.message);
       }
     } catch (error) {
@@ -108,6 +117,7 @@ const Login = ({ auth }) => {
         "An error occured in handleSubmit function in Login.jsx file",
         error.message
       );
+      setFailureMessage("Server error. Please try again later.");
     } finally {
       setLoading(false);
     }
@@ -146,6 +156,7 @@ const Login = ({ auth }) => {
           >
             Log in
           </button>
+
           <button
             onClick={() => handleSwitchTab("register")}
             className={`login__switch-button ${
@@ -239,6 +250,9 @@ const Login = ({ auth }) => {
                 : "Create account"}
             </span>
           </button>
+
+          {successMessage && <Message type="success" text={successMessage} />}
+          {failureMessage && <Message type="failure" text={successMessage} />}
         </form>
 
         <div className="login__divider">or</div>

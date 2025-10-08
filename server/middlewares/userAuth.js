@@ -12,6 +12,9 @@ const userAuth = (req, res, next) => {
     }
 
     const payload = verifyToken(token, process.env.JWT_SECRET);
+    if (!payload)
+      return res.json({ success: false, message: "Token verificatin failed" });
+
     req.payload = payload;
     next();
   } catch (err) {

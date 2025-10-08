@@ -1,7 +1,5 @@
 import jwt from "jsonwebtoken";
-
-const JWT_SECRET = process.env.JWT_SECRET || "fallbacksecret";
-const JWT_EXPIRY = "1d";
+import { JWT_EXPIRY, JWT_SECRET } from "./default-values/jwt.js";
 
 function generateToken(payload, expiresIn = JWT_EXPIRY) {
   return jwt.sign(payload, JWT_SECRET, { expiresIn });

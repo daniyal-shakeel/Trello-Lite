@@ -1,23 +1,125 @@
 import { useEffect, useState } from "react";
 import { X, Pencil, Trash2, Send, ArrowRight } from "lucide-react";
-import "./OpenTask.css";
-import {
-  mockComments,
-  mockActivities,
-} from "../../../assets/data/open-task.js";
+import "./OpenTask.scss";
+import { mockActivities } from "../../../assets/data/open-task.js";
 import TaskDeleteConfirmationModal from "../confirm/task-delete/TaskDeleteConfirmationModal.jsx";
+import axios from "axios";
+import Message from "../../../components/ui/message/Message.jsx";
+import moment from "moment";
+import Comment from "../../../components/comment/Comment.jsx";
 
-const OpenTask = ({ isOpen = true, onClose = () => {}, task = {} }) => {
+const OpenTask = ({
+  isOpen = true,
+  onClose = () => {},
+  task = {},
+  setTasks = () => {
+    console.log("Something went wrong at BoardCard.jsx");
+  },
+}) => {
   const [activeTab, setActiveTab] = useState("activity");
   const [commentText, setCommentText] = useState("");
   const [editBoardName, setEditBoardName] = useState(false);
   const [showModal, setShowModal] = useState(false);
-  const [editComment, setEditComment] = useState("");
-
-  const [comments, setComments] = useState(mockComments || []);
+  const [updatedTaskTitle, setUpdatedTaskTitle] = useState(
+    task?.title || "Something went wrong"
+  );
+  const [failureMessage, setFailureMessage] = useState({}); //failure message for update task title
+  const [successMessage, setSuccessMessage] = useState({}); //failure message for update task title
+  const [comments, setComments] = useState([]);
   const handleEditBoardName = () => {
     setEditBoardName(true);
   };
+
+  const handleTaskUpdate = async () => {
+    try {
+      const res = await axios.put(
+        `${import.meta.env.VITE_SERVER_URL}/api/task/update/${
+          task?.boardId || "something went wrong"
+        }/${task?._id || "something went wrong"}`,
+        { updatedTaskTitle },
+        { withCredentials: true }
+      );
+      if (res?.data?.success) {
+        setTasks((prev) =>
+          prev.map((t) =>
+            String(t._id) === String(task._id) &&
+            String(t.boardId) === task.boardId
+              ? { ...t, title: updatedTaskTitle }
+              : t
+          )
+        );
+        console.log(res.data?.message || "No message received");
+        setFailureMessage({});
+        setSuccessMessage({ type: "success", text: res?.data?.message });
+      } else {
+        console.log(res?.data?.message);
+        setSuccessMessage({});
+        setFailureMessage({ type: "failure", text: res?.data?.message });
+      }
+    } catch (error) {
+      console.log(
+        "An error occured in handleTaskUpdate in OpenTask.jsx: ",
+        error.message
+      );
+    }
+  };
+
+  const getCommentsByTask = async () => {
+    try {
+      const res = await axios.get(
+        `${import.meta.env.VITE_SERVER_URL}/api/comment/task/${task._id}`,
+        { withCredentials: true }
+      );
+      if (res?.data?.success) {
+        console.log(res.data?.message);
+        const commentsCopy = res.data?.comments || [];
+        if (commentsCopy.length > 0) {
+          const mappedComments = commentsCopy.map((comment) => ({
+            ...comment,
+            time: moment(comment.createdAt).fromNow(),
+          }));
+          setComments(mappedComments || []);
+        }
+      } else {
+        console.log(res.data?.message);
+      }
+    } catch (error) {
+      console.log(
+        "An error occured in getCommentsByTask in OpenTask.jsx: ",
+        error.message
+      );
+    }
+  };
+
+  const postComment = async () => {
+    try {
+      const res = await axios.post(
+        `${import.meta.env.VITE_SERVER_URL}/api/comment/create`,
+        { taskId: task._id, commentText },
+        { withCredentials: true }
+      );
+
+      if (res?.data?.success) {
+        console.log(res.data?.message || "Operation successful");
+        const updatedComment = res.data.comment;
+        updatedComment["time"] = moment(updatedComment.createdAt).fromNow();
+        setComments((prev) => [...prev, res.data.comment]);
+        setCommentText("");
+      } else {
+        console.log(res.data?.message || "Operation failed");
+      }
+    } catch (error) {
+      console.log(
+        "An error occured in postComment in Opentask.jsx: ",
+        error.message
+      );
+    }
+  };
+  useEffect(() => {
+    if (activeTab === "comments") {
+      getCommentsByTask();
+    }
+  }, [activeTab]);
 
   if (!isOpen) return null;
 
@@ -27,19 +129,19 @@ const OpenTask = ({ isOpen = true, onClose = () => {}, task = {} }) => {
         {}
         <div className="open-task-header">
           <div className="open-task-header-content">
-            <h2 className="open-task-title">
-              {task?.title || "Plan weekly meal prep"}
-            </h2>
-            <p className="open-task-desc">
-              {task?.description || "Prepare healthy meals for the week ahead"}
-            </p>
+            <h2 className="open-task-title">{task?.title || "..."}</h2>
+            <p className="open-task-desc">{task?.description || "..."}</p>
             <div className="open-task-meta">
-              <span>Assigned to: </span>
+              <span>Assigned to: {task?.assignee?.email || ".."}</span>
               <span className="open-task-user">
-                <span className="user-avatar">SM</span> Sarah Miller
+                <span className="user-avatar">
+                  {" "}
+                  {task.assignee?.name
+                    ? task.assignee.name[0].toUpperCase()
+                    : "U"}
+                </span>{" "}
+                {task?.assignee?.name}
               </span>
-              <span className="meta-divider">Status:</span>
-              <span className="open-task-status">To Do</span>
             </div>
           </div>
           <div className="open-task-actions">
@@ -52,25 +154,43 @@ const OpenTask = ({ isOpen = true, onClose = () => {}, task = {} }) => {
             ) : (
               <div className="open-task-actions-input-container">
                 <input
+                  value={updatedTaskTitle}
                   onKeyDown={(e) => {
-                    if (e.key === "Enter") setEditBoardName(false);
+                    if (e.key === "Enter") handleTaskUpdate();
                   }}
+                  onChange={(e) => setUpdatedTaskTitle(e.target.value)}
                   placeholder="Update Board Name"
                   className="open-task-actions-input"
                 />{" "}
                 <div className="open-task-actions-icons-container">
                   {" "}
                   <X
-                    onClick={() => setEditBoardName(false)}
+                    onClick={() => {
+                      setEditBoardName(false);
+                      setFailureMessage({});
+                    }}
                     className="open-task-actions-icon"
                     width={20}
                   />
                   <ArrowRight
-                    onClick={() => setEditBoardName(false)}
+                    onClick={handleTaskUpdate}
                     className="open-task-actions-icon"
                     width={20}
                   />
                 </div>
+                <Message
+                  variant={
+                    (failureMessage && "compact") || (successMessage && "full")
+                  }
+                  type={
+                    (failureMessage && failureMessage.type) ||
+                    (successMessage && successMessage.type)
+                  }
+                  text={
+                    (failureMessage && failureMessage.text) ||
+                    (successMessage && successMessage.text)
+                  }
+                />
               </div>
             )}
             <Trash2
@@ -103,61 +223,17 @@ const OpenTask = ({ isOpen = true, onClose = () => {}, task = {} }) => {
           {}
           {activeTab === "comments" && (
             <div className="open-task-comments">
-              {comments.map((c, i) => (
-                <div key={i} className="comment-item">
-                  <div className="comment-avatar">{c.avatar}</div>
-                  <div className="comment-content">
-                    <div className="comment-header">
-                      <span className="comment-name">{c.name}</span>
-                      <span className="comment-time">{c.time}</span>
-                      {c.canEdit && (
-                        <div className="comment-actions">
-                          <Pencil
-                            onClick={() =>
-                              setEditComment((prev) =>
-                                prev ? prev._id : c._id
-                              )
-                            }
-                            size={16}
-                          />
-                          <Trash2
-                            onClick={() =>
-                              setComments((prev) =>
-                                prev.filter((p) => p._id !== c._id)
-                              )
-                            }
-                            size={16}
-                          />
-                        </div>
-                      )}
-                    </div>
-                    <div className="comment-body">
-                      {editComment === c._id ? (
-                        <>
-                          <textarea className="comment-edit-input">
-                            {c.text}
-                          </textarea>
-                          <div className="comment-edit-actions">
-                            <button
-                              onClick={() => setEditComment("")}
-                              className="comment-edit-btn cancel"
-                            >
-                              Cancel
-                            </button>
-                            <button className="comment-edit-btn save">
-                              Save
-                            </button>
-                          </div>
-                        </>
-                      ) : (
-                        <p className="comment-text">{c.text}</p>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              ))}
+              {comments &&
+                comments.length > 0 &&
+                comments.map((comment, i) => (
+                  <Comment
+                    key={i}
+                    comment={comment}
+                    setComments={setComments}
+                    getCommentsByTask={getCommentsByTask}
+                  />
+                ))}
 
-              {}
               <div className="add-comment">
                 <div className="comment-avatar">JD</div>
                 <div className="add-comment-wrapper">
@@ -193,22 +269,7 @@ const OpenTask = ({ isOpen = true, onClose = () => {}, task = {} }) => {
         {}
         {activeTab === "comments" && (
           <div className="open-task-footer">
-            <button
-              onClick={() =>
-                setComments((prev) => [
-                  ...prev,
-                  {
-                    _id: "c1",
-                    avatar: "JD",
-                    name: "John Doe",
-                    time: "1 day ago",
-                    text: commentText,
-                    canEdit: true,
-                  },
-                ])
-              }
-              className="comment-btn"
-            >
+            <button onClick={postComment} className="comment-btn">
               <Send size={16} />
               Post Comment
             </button>

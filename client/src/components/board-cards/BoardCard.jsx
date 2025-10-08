@@ -2,16 +2,24 @@ import { useState, useRef, useEffect } from "react";
 import Task from "../task/Task";
 import "./BoardCard.css";
 import BoardCardSkeleton from "../skeletons/board-card/BoardCardSkeleton";
-import { MoreVertical } from "lucide-react";
+import { GripVertical, MoreVertical } from "lucide-react";
 import BoardStatusDropdown from "../ui/dropdown/BoardStatusDropdown";
 import axios from "axios";
 
-const BoardCard = ({ name, boardId, status = "To Do", tasks = [] }) => {
+const BoardCard = ({
+  name,
+  boardId,
+  status = "",
+  tasks = [],
+  setTasks = () => {
+    console.log("Something went wrong at BoardCard.jsx");
+  },
+  loading = false,
+}) => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [currentStatus, setCurrentStatus] = useState(status);
   const dropdownRef = useRef(null);
-
-  const filteredTasks = tasks.filter((task) => task.status === currentStatus);
+  console.log(tasks);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -33,33 +41,35 @@ const BoardCard = ({ name, boardId, status = "To Do", tasks = [] }) => {
           import.meta.env.VITE_SERVER_URL
         }/api/board/change-status/${newStatus}`,
         { boardId },
-        {
-          withCredentials: true,
-        }
+        { withCredentials: true }
       );
 
       if (response.data.success) {
         console.log(response.data.message);
-        setCurrentStatus(newStatus); 
+        setCurrentStatus(newStatus);
       } else {
         console.error(response.data.message);
       }
 
-      setDropdownOpen(false); 
+      setDropdownOpen(false);
     } catch (error) {
       console.error("Error updating status:", error);
     }
   };
 
+  if (loading) {
+    return <BoardCardSkeleton />;
+  }
+
   return (
     <div id="board" className="board">
-      {}
+      <div className="board__drag-icon-container">
+        <GripVertical className="board__drag-icon" />
+      </div>
       <div className="board__header">
         <h1 className="board__status">{name}</h1>
         <div className="board__actions">
-          <p className="board__count">{filteredTasks.length}</p>
-
-          {}
+          <p className="board__count">{tasks.length}</p>
           <div className="dropdown-wrapper" ref={dropdownRef}>
             <button
               className="board__menu-btn"
@@ -80,19 +90,12 @@ const BoardCard = ({ name, boardId, status = "To Do", tasks = [] }) => {
         </div>
       </div>
 
-      {}
       <div className="board__tasks">
-        {filteredTasks.map((task) => (
-          <Task
-            key={task._id}
-            title={task?.title}
-            description={task?.description}
-            avatar={task?.avatar}
-            name={task?.name}
-            time={task?.time}
-            color={task?.color}
-          />
-        ))}
+        <div className="board__tasks">
+          {tasks.map((task) => (
+            <Task task={task} setTasks={setTasks} />
+          ))}
+        </div>
       </div>
     </div>
   );

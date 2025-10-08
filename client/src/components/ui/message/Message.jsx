@@ -1,10 +1,10 @@
 import "./Message.css";
 
-const Message = ({ type, text }) => {
+const Message = ({ type, text, variant="full" }) => {
   if (!text) return null;
 
   return (
-    <div className={`message message--${type}`}>
+    <div className={`message-${variant} message--${type}--${variant}`}>
       {text}
     </div>
   );

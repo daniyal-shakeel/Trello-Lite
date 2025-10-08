@@ -19,16 +19,16 @@ function sendJwtAndClearCookies(res, user) {
     name: user.name,
   });
 
-  const cookieConfig = {
+  res.cookie("token", token, {
     httpOnly: true,
-    secure: true,
+    secure: process.env.NODE_ENV === "production",
     maxAge: TOKEN_EXPIRY,
-    sameSite: "lax",
-  };
-
-  res.cookie("token", token, cookieConfig);
-  return res.redirect(`${process.env.CLIENT_URI}/dashboard`);
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+  });
+  return res.redirect(getRedirectUri('/dashboard'));
 }
+
+const getRedirectUri = (params) => `${process.env.CLIENT_URI}${params}`;
 
 const redirectToGoogle = async (_, res) => {
   try {
@@ -40,21 +40,24 @@ const redirectToGoogle = async (_, res) => {
       "email",
     ]);
 
-    const cookieConfig = {
+    res.cookie("google_oauth_state", state, {
       httpOnly: true,
-      secure: true,
+      secure: process.env.NODE_ENV === "production",
       maxAge: OAUTH_EXCHANGE_EXPIRY,
-      sameSite: "lax",
-    };
-
-    res.cookie("google_oauth_state", state, cookieConfig);
-    res.cookie("google_code_verifier", codeVerifier, cookieConfig);
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+    });
+    res.cookie("google_code_verifier", codeVerifier, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      maxAge: OAUTH_EXCHANGE_EXPIRY,
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+    });
 
     res.redirect(url.toString());
   } catch (err) {
     console.error("An error occured in redirectToGoogle function", err.message);
     const message = encodeURIComponent("Failed to start Google login");
-    return res.redirect(`${process.env.CLIENT_URI}/login?error=${message}`);
+    return res.redirect(getRedirectUri(`/login?error=${message}`));
   }
 };
 
@@ -73,7 +76,7 @@ const handleGoogleCallback = async (req, res) => {
     state !== storedState
   ) {
     const message = encodeURIComponent("Invalid OAuth state or missing params");
-    return res.redirect(`${process.env.CLIENT_URI}/login?error=${message}`);
+    return res.redirect(getRedirectUri(`/login?error=${message}`));
   }
 
   let tokens;
@@ -84,7 +87,7 @@ const handleGoogleCallback = async (req, res) => {
     const message = encodeURIComponent(
       "Failed to validate Google authorization code"
     );
-    return res.redirect(`${process.env.CLIENT_URI}/login?error=${message}`);
+    return res.redirect(getRedirectUri(`/login?error=${message}`));
   }
 
   const claims = decodeIdToken(tokens.idToken());
@@ -101,7 +104,7 @@ const handleGoogleCallback = async (req, res) => {
       const message = encodeURIComponent(
         "Email already registered. Try another login method."
       );
-      return res.redirect(`${process.env.CLIENT_URI}/login?error=${message}`);
+      return res.redirect(getRedirectUri(`/login?error=${message}`));
     }
 
     if (!user) {
@@ -126,7 +129,7 @@ const handleGoogleCallback = async (req, res) => {
       error.message
     );
     const message = encodeURIComponent("Something went wrong during login");
-    return res.redirect(`${process.env.CLIENT_URI}/login?error=${message}`);
+    return res.redirect(getRedirectUri(`/login?error=${message}`));
   }
 };
 
@@ -163,14 +166,12 @@ const signup = async (req, res) => {
       name: user.name,
     });
 
-    const cookieConfig = {
+    res.cookie("token", token, {
       httpOnly: true,
-      secure: true,
+      secure: process.env.NODE_ENV === "production",
       maxAge: TOKEN_EXPIRY,
-      sameSite: "lax",
-    };
-
-    res.cookie("token", token, cookieConfig);
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+    });
 
     await Board.create({
       name: "My Board",
@@ -182,7 +183,6 @@ const signup = async (req, res) => {
       success: true,
       message: "Signup successful",
       user,
-      token,
     });
   } catch (err) {
     console.error("An error occured in signup function", err.message);
@@ -226,20 +226,17 @@ const login = async (req, res) => {
       name: user.name,
     });
 
-    const cookieConfig = {
+    res.cookie("token", token, {
       httpOnly: true,
-      secure: true,
+      secure: process.env.NODE_ENV === "production",
       maxAge: TOKEN_EXPIRY,
-      sameSite: "lax",
-    };
-
-    res.cookie("token", token, cookieConfig);
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+    });
 
     return res.json({
       success: true,
       message: "Login successful",
       user,
-      token,
     });
   } catch (err) {
     console.error("An error occured in login function", err.message);

@@ -1,6 +1,7 @@
 import "./AddCollaborator.css";
-import { ArrowDown, ArrowDown01, ArrowRight, UserPlus, X } from "lucide-react";
-import { useState } from "react";
+import { ArrowRight, UserPlus, X } from "lucide-react";
+import { useEffect, useState } from "react";
+import Message from "../../ui/message/Message.jsx";
 
 const AddCollaborator = ({
   isOpen,
@@ -10,19 +11,18 @@ const AddCollaborator = ({
   onConfirm,
 }) => {
   const [input, setInput] = useState("");
+  const [message, setMessage] = useState({ type: "", text: "" });
 
   if (!isOpen) return null;
 
   const handleAdd = () => {
     if (!input.trim()) return;
 
-    
     const newCollaborators = input
       .split(",")
       .map((c) => c.trim())
       .filter(Boolean);
 
-    
     setCollaborators([...collaborators, ...newCollaborators]);
     setInput("");
   };
@@ -31,17 +31,41 @@ const AddCollaborator = ({
     setCollaborators(collaborators.filter((c) => c !== name));
   };
 
-  const handleConfirm = () => {
-    if (collaborators.length === 0) return;
-    onConfirm(collaborators); 
-    onClose(); 
+  const handleConfirm = async () => {
+    if (collaborators.length === 0) {
+      setMessage({
+        type: "failure",
+        text: "Please add at least one collaborator.",
+      });
+      return;
+    }
+
+    try {
+      const success = await onConfirm(collaborators);
+console.log(collaborators)
+      if (success) {
+        setMessage({
+          type: "success",
+          text: "Collaborators added successfully!",
+        });
+      } else {
+        setMessage({ type: "failure", text: "Failed to add collaborators." });
+      }
+    } catch (err) {
+      setMessage({
+        type: "failure",
+        text: err.message || "An error occurred.",
+      });
+    }
   };
 
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal-container" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
-          <h2>Add Collaborators <UserPlus /></h2>
+          <h2>
+            Add Collaborators <UserPlus />
+          </h2>
           <X className="modal-close" onClick={onClose} />
         </div>
 
@@ -66,7 +90,6 @@ const AddCollaborator = ({
             </button>
           </div>
 
-          {}
           {collaborators.length > 0 && (
             <ul className="collaborators-list">
               {collaborators.map((c, i) => (
@@ -80,6 +103,8 @@ const AddCollaborator = ({
               ))}
             </ul>
           )}
+
+          <Message type={message.type} text={message.text} />
         </div>
 
         <div className="modal-footer">
