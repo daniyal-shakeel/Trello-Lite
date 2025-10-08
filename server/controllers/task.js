@@ -273,4 +273,59 @@ const updateTask = async (req, res) => {
   }
 };
 
-export { create, getAllTasks, updateTask };
+const deleteTask = async (req, res) => {
+  let { boardId, taskId } = req.params || {};
+  let { _id: userId } = req.payload || {};
+
+  if (!boardId)
+    return res.json({ success: false, message: "Board Id required" });
+  if (!taskId) return res.json({ success: false, message: "Task Id required" });
+  if (!userId) return res.json({ success: false, message: "User Id required" });
+
+  let boardCheck = sanitizeObjectId(boardId);
+  if (!boardCheck.success)
+    return res.json({
+      success: boardCheck.success,
+      message: boardCheck.message,
+    });
+  boardId = boardCheck.validId;
+
+  let taskCheck = sanitizeObjectId(taskId);
+  if (!taskCheck.success)
+    return res.json({
+      success: taskCheck.success,
+      message: taskCheck.message,
+    });
+  taskId = taskCheck.validId;
+
+  let userCheck = sanitizeObjectId(userId);
+  if (!userCheck.success)
+    return res.json({
+      success: userCheck.success,
+      message: userCheck.message,
+    });
+  userId = userCheck.validId;
+
+  try {
+    const user = await User.exists({ _id: userId });
+    if (!user) return res.json({ success: false, message: "User not found" });
+
+    const board = await Board.exists({ _id: boardId });
+    if (!board) return res.json({ success: false, message: "Board not found" });
+
+    const task = await Task.findOne({
+      _id: taskId,
+      boardId,
+      createdBy: userId,
+    });
+    if (!task) return res.json({ success: false, message: "Task not found" });
+
+    await task.deleteOne();
+    return res.json({ success: true, message: "Task deleted" });
+  } catch (error) {
+    console.log("An error occured in deleteTask function: ", error.message);
+    return res.json({ success: false, message: "Error in deleting task" });
+  }
+};
+
+export { create, getAllTasks, updateTask, deleteTask };

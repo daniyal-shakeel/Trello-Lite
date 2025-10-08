@@ -115,6 +115,29 @@ const OpenTask = ({
       );
     }
   };
+  const handleDeleteTask = async () => {
+    try {
+      const res = await axios.delete(
+        `${import.meta.env.VITE_SERVER_URL}/api/task/delete/${task.boardId}/${
+          task._id
+        }`,
+        { withCredentials: true }
+      );
+      if (res?.data?.success) {
+        setTasks((prev) => prev.filter((t) => t._id !== task._id));
+        setShowModal(false);
+        onClose();
+        console.log(res.data?.message || "Operation successful");
+      } else {
+        console.log(res.data?.message || "Operation failed");
+      }
+    } catch (error) {
+      console.log(
+        "An error occured in handleDeleteTask function: ",
+        error.message
+      );
+    }
+  };
   useEffect(() => {
     if (activeTab === "comments") {
       getCommentsByTask();
@@ -282,11 +305,7 @@ const OpenTask = ({
           title={"My Task"}
           isOpen={showModal}
           onClose={() => setShowModal(false)}
-          onConfirm={() => {
-            console.log("Task deleted");
-            setShowModal(false);
-            onClose();
-          }}
+          onConfirm={handleDeleteTask}
         />
       )}
     </div>

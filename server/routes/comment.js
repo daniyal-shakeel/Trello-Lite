@@ -11,6 +11,6 @@ const commentRouter = express.Router();
 commentRouter.post("/create", createComment);
 commentRouter.get("/task/:taskId", getCommentsByTask);
 commentRouter.put("/update/:commentId", updateComment);
-commentRouter.delete("/delete/:commentId", deleteComment);
+commentRouter.delete("/delete/:taskId/:commentId", deleteComment);
 
 export { commentRouter };

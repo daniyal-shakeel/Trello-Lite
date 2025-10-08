@@ -255,6 +255,57 @@ const updateComment = async (req, res) => {
   });
 };
 
-const deleteComment = async (req, res) => {};
+const deleteComment = async (req, res) => {
+  let { commentId, taskId } = req.params || {};
+  let { _id: authorId } = req.payload || {};
+
+  if (!taskId) return res.json({ success: false, message: "Task Id required" });
+  if (!commentId)
+    return res.json({ success: false, message: "Comment Id required" });
+  if (!authorId) return res.json({ success: false, message: "User Id required" });
+
+  let taskCheck = sanitizeObjectId(taskId);
+  if (!taskCheck.success)
+    return res.json({ success: taskCheck.success, message: taskCheck.message });
+  taskId = taskCheck.validId;
+
+  let commentCheck = sanitizeObjectId(commentId);
+  if (!commentCheck.success)
+    return res.json({
+      success: commentCheck.success,
+      message: commentCheck.message,
+    });
+  commentId = commentCheck.validId;
+
+  let authorCheck = sanitizeObjectId(authorId);
+  if (!authorCheck.success)
+    return res.json({
+      success: authorCheck.success,
+      message: authorCheck.message,
+    });
+  authorId = authorCheck.validId;
+
+  try {
+    const task = await Task.exists({ _id: taskId });
+    if (!task)
+      return res.json({ success: false, message: "Task is not found" });
+
+    const comment = await Comment.findOne({
+      _id: commentId,
+      taskId,
+      authorId,
+    });
+
+    if (!comment)
+      return res.json({ success: false, message: "Comment not found" });
+
+    comment.isDeleted = true;
+    await comment.save();
+    return res.json({ success: true, message: "Comment deleted" });
+  } catch (error) {
+    console.log("An error occured in deleteComment function: ", error.message);
+    return res.json({ success: false, message: "Error in deleting comment" });
+  }
+};
 
 export { createComment, getCommentsByTask, updateComment, deleteComment };

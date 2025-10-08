@@ -1,5 +1,5 @@
 import "./Comments.scss";
-import {  useState } from "react";
+import { useState } from "react";
 import { Pencil, Trash2 } from "lucide-react";
 import axios from "axios";
 const Comment = ({
@@ -36,6 +36,25 @@ const Comment = ({
     }
   };
 
+  const handleDeleteComment = async () => {
+    try {
+      const res = await axios.delete(
+        `${import.meta.env.VITE_SERVER_URL}/api/comment/delete/${c.taskId}/${
+          c._id
+        }`,
+        { withCredentials: true }
+      );
+      if (res?.data?.success) {
+        setComments((prev) => prev.filter((p) => p._id !== c._id));
+        console.log(res.data?.message || "Operation successful");
+      } else {
+        console.log(res.data?.message || "Operation failed");
+      }
+    } catch (error) {
+      console.log("An error occured in handleDeleteComment function: ");
+    }
+  };
+
   if (!c) return null;
   return (
     <div className="comment-item">
@@ -60,12 +79,7 @@ const Comment = ({
                 }
                 size={16}
               />
-              <Trash2
-                onClick={() =>
-                  setComments((prev) => prev.filter((p) => p._id !== c._id))
-                }
-                size={16}
-              />
+              <Trash2 onClick={handleDeleteComment} size={16} />
             </div>
           )}
         </div>
