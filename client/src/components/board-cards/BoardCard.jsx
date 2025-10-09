@@ -11,9 +11,8 @@ const BoardCard = ({
   boardId,
   status = "",
   tasks = [],
-  setTasks = () => {
-    console.log("Something went wrong at BoardCard.jsx");
-  },
+  setTasks = () => {},
+  setBoards = () => {},
   loading = false,
 }) => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -47,6 +46,11 @@ const BoardCard = ({
       if (response.data.success) {
         console.log(response.data.message);
         setCurrentStatus(newStatus);
+        setBoards((prevBoards) =>
+          prevBoards.map((b) =>
+            b._id === boardId ? { ...b, status: newStatus } : b
+          )
+        );
       } else {
         console.error(response.data.message);
       }

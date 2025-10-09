@@ -25,7 +25,6 @@ const Dashboard = ({ setAuth, user }) => {
   }, [boards, activeBoard]);
 
   const filteredBoards = useMemo(() => {
-    if (activeStatus === "all") return boards;
     return boards.filter((board) => board.status === activeStatus);
   }, [boards, activeStatus]);
 
@@ -131,6 +130,7 @@ const Dashboard = ({ setAuth, user }) => {
                 tasks={tasks.filter((task) => task.boardId === board._id)}
                 setTasks={setTasks}
                 loading={taskLoading}
+                setBoards={setBoards} 
               />
             ))
           ) : (
