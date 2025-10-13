@@ -126,6 +126,11 @@
 
 .sidebar__boards {
   margin-bottom: 32px;
+
+  .no-shared-boards{
+     color: var(--muted-foreground);
+     font-size: 12px;
+  }
 }
 
 .sidebar__boards-header {

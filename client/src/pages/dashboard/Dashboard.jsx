@@ -5,6 +5,7 @@ import "./Dashboard.css";
 import { useState, useMemo, useEffect } from "react";
 import axios from "axios";
 import BoardCardSkeleton from "../../components/skeletons/board-card/BoardCardSkeleton";
+import { getApiUri } from "../../utils/getUri";
 
 const Dashboard = ({ setAuth, user }) => {
   const [activeBoard, setActiveBoard] = useState(null);
@@ -37,10 +38,9 @@ const Dashboard = ({ setAuth, user }) => {
   const getAllBoards = async () => {
     setBoardLoading(true);
     try {
-      const res = await axios.get(
-        `${import.meta.env.VITE_SERVER_URL}/api/board/get-all-boards`,
-        { withCredentials: true }
-      );
+      const res = await axios.get(getApiUri("/api/board/get-all-boards"), {
+        withCredentials: true,
+      });
 
       if (res.data.success) {
         setBoards(res.data.boards || []);
@@ -58,11 +58,10 @@ const Dashboard = ({ setAuth, user }) => {
 
   const getAllTasks = async () => {
     setTaskLoading(true);
+    if (!activeBoard) return;
     try {
       const res = await axios.get(
-        `${
-          import.meta.env.VITE_SERVER_URL
-        }/api/task/get-all-tasks/${activeBoard}`,
+        getApiUri(`/api/task/get-all-tasks/${activeBoard}`),
         { withCredentials: true }
       );
 
@@ -85,12 +84,8 @@ const Dashboard = ({ setAuth, user }) => {
   }, []);
 
   useEffect(() => {
-    if (activeBoard) {
-      getAllTasks();
-    }
+    if (activeBoard) getAllTasks();
   }, [activeBoard]);
-
-  useEffect(() => console.log("Tasks: ", tasks), [tasks]);
 
   return (
     <div id="dashboard-layout" className="dashboard-layout">
@@ -121,18 +116,24 @@ const Dashboard = ({ setAuth, user }) => {
               <BoardCardSkeleton key={index} />
             ))
           ) : filteredBoards.length > 0 ? (
-            filteredBoards.map((board) => (
-              <BoardCard
-                key={board._id}
-                boardId={board._id}
-                name={board.name}
-                status={board.status}
-                tasks={tasks.filter((task) => task.boardId === board._id)}
-                setTasks={setTasks}
-                loading={taskLoading}
-                setBoards={setBoards} 
-              />
-            ))
+            [...filteredBoards]
+              .sort((a, b) =>
+                a._id === activeBoard ? -1 : b._id === activeBoard ? 1 : 0
+              )
+              .map((board) => (
+                <BoardCard
+                  activeBoard={activeBoard}
+                  isShared={board.isShared}
+                  key={board._id}
+                  boardId={board._id}
+                  name={board.name}
+                  status={board.status}
+                  tasks={tasks.filter((task) => task.boardId === board._id)}
+                  setTasks={setTasks}
+                  loading={taskLoading}
+                  setBoards={setBoards}
+                />
+              ))
           ) : (
             <p className="empty-message">
               No boards found for "{activeStatus}"

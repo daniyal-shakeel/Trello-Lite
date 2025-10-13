@@ -1,12 +1,15 @@
 import { useEffect, useState } from "react";
 import { X, Pencil, Trash2, Send, ArrowRight } from "lucide-react";
 import "./OpenTask.scss";
-import { mockActivities } from "../../../assets/data/open-task.js";
 import TaskDeleteConfirmationModal from "../confirm/task-delete/TaskDeleteConfirmationModal.jsx";
 import axios from "axios";
 import Message from "../../../components/ui/message/Message.jsx";
 import moment from "moment";
 import Comment from "../../../components/comment/Comment.jsx";
+import { getApiUri } from "../../../utils/getUri.js";
+import CommentsSkeleton from "../../skeletons/comments/commentsSkeleton.jsx";
+import Activity from "../../activity/Activity.jsx";
+import ActivityComponentSkeleton from "../../skeletons/activity-component/ActivityComponentSkeleton.jsx";
 
 const OpenTask = ({
   isOpen = true,
@@ -26,6 +29,12 @@ const OpenTask = ({
   const [failureMessage, setFailureMessage] = useState({}); //failure message for update task title
   const [successMessage, setSuccessMessage] = useState({}); //failure message for update task title
   const [comments, setComments] = useState([]);
+
+  const [loadingComments, setLoadingComments] = useState(false);
+
+  const [activities, setActivities] = useState([]);
+  const [activityResponses, setActivityResponses] = useState({});
+  const [loadingActivities, setLoadingActivities] = useState(false);
   const handleEditBoardName = () => {
     setEditBoardName(true);
   };
@@ -33,9 +42,7 @@ const OpenTask = ({
   const handleTaskUpdate = async () => {
     try {
       const res = await axios.put(
-        `${import.meta.env.VITE_SERVER_URL}/api/task/update/${
-          task?.boardId || "something went wrong"
-        }/${task?._id || "something went wrong"}`,
+        getApiUri(`/api/task/update/${task?.boardId || ""}/${task?._id || ""}`),
         { updatedTaskTitle },
         { withCredentials: true }
       );
@@ -64,12 +71,32 @@ const OpenTask = ({
     }
   };
 
-  const getCommentsByTask = async () => {
+  const getActivitiesByTask = async () => {
+    setLoadingActivities(true);
     try {
-      const res = await axios.get(
-        `${import.meta.env.VITE_SERVER_URL}/api/comment/task/${task._id}`,
-        { withCredentials: true }
-      );
+      const res = await axios.get(getApiUri(`/api/activity/task/${task._id}`), {
+        withCredentials: true,
+      });
+
+      if (res?.data?.success) {
+        setActivities(res.data.activities || []);
+        setActivityResponses(res.data.activityResponses || {});
+      } else {
+        console.log(res.data?.message);
+      }
+    } catch (error) {
+      console.log("Error in getActivitiesByTask:", error.message);
+    } finally {
+      setLoadingActivities(false);
+    }
+  };
+
+  const getCommentsByTask = async () => {
+    setLoadingComments(true);
+    try {
+      const res = await axios.get(getApiUri(`/api/comment/task/${task._id}`), {
+        withCredentials: true,
+      });
       if (res?.data?.success) {
         console.log(res.data?.message);
         const commentsCopy = res.data?.comments || [];
@@ -88,13 +115,15 @@ const OpenTask = ({
         "An error occured in getCommentsByTask in OpenTask.jsx: ",
         error.message
       );
+    } finally {
+      setLoadingComments(false);
     }
   };
 
   const postComment = async () => {
     try {
       const res = await axios.post(
-        `${import.meta.env.VITE_SERVER_URL}/api/comment/create`,
+        getApiUri("/api/comment/create"),
         { taskId: task._id, commentText },
         { withCredentials: true }
       );
@@ -118,9 +147,7 @@ const OpenTask = ({
   const handleDeleteTask = async () => {
     try {
       const res = await axios.delete(
-        `${import.meta.env.VITE_SERVER_URL}/api/task/delete/${task.boardId}/${
-          task._id
-        }`,
+        getApiUri(`/api/task/delete/${task.boardId}/${task._id}`),
         { withCredentials: true }
       );
       if (res?.data?.success) {
@@ -138,9 +165,12 @@ const OpenTask = ({
       );
     }
   };
+
   useEffect(() => {
     if (activeTab === "comments") {
       getCommentsByTask();
+    } else if (activeTab === "activity") {
+      getActivitiesByTask();
     }
   }, [activeTab]);
 
@@ -246,16 +276,19 @@ const OpenTask = ({
           {}
           {activeTab === "comments" && (
             <div className="open-task-comments">
-              {comments &&
-                comments.length > 0 &&
-                comments.map((comment, i) => (
-                  <Comment
-                    key={i}
-                    comment={comment}
-                    setComments={setComments}
-                    getCommentsByTask={getCommentsByTask}
-                  />
-                ))}
+              {!loadingComments
+                ? comments.map((comment, i) => (
+                    <Comment
+                      key={i}
+                      comment={comment}
+                      setComments={setComments}
+                      getCommentsByTask={getCommentsByTask}
+                    />
+                  ))
+                : [1, 2].map((_, i) => <CommentsSkeleton key={i} />)}
+              {!loadingComments && comments.length === 0 && (
+                <div className="no-comments">No comments yet.</div>
+              )}
 
               <div className="add-comment">
                 <div className="comment-avatar">JD</div>
@@ -265,6 +298,12 @@ const OpenTask = ({
                     className="comment-input"
                     value={commentText}
                     onChange={(e) => setCommentText(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" && e.ctrlKey) {
+                        e.preventDefault();
+                        postComment();
+                      }
+                    }}
                   ></textarea>
                 </div>
               </div>
@@ -274,17 +313,25 @@ const OpenTask = ({
           {}
           {activeTab === "activity" && (
             <div className="open-task-activities">
-              {mockActivities.map((a, i) => (
-                <div key={i} className="activity-item">
-                  <div className="comment-avatar">{a.avatar}</div>
-                  <div className="activity-content">
-                    <p className="activity-text">
-                      <span className="activity-name">{a.name}</span> {a.action}
-                    </p>
-                    <span className="activity-time">{a.time}</span>
-                  </div>
-                </div>
-              ))}
+              {loadingActivities ? (
+                [1, 2, 3].map((_, i) => <ActivityComponentSkeleton key={i} />)
+              ) : activities.length > 0 ? (
+                activities
+                  ?.slice()
+                  .sort((a, b) => new Date(b.time) - new Date(a.time))
+                  .map((a, i) => (
+                    <Activity
+                      key={i}
+                      avatar={a.avatar}
+                      name={a.name}
+                      action={a.action}
+                      time={a.time}
+                      activityResponses={activityResponses}
+                    />
+                  ))
+              ) : (
+                <div className="no-activity">No activity yet.</div>
+              )}
             </div>
           )}
         </div>
@@ -296,6 +343,9 @@ const OpenTask = ({
               <Send size={16} />
               Post Comment
             </button>
+            <span className="open-task-footer__shortcut-hint">
+              Press Ctrl+Enter to post
+            </span>
           </div>
         )}
       </div>

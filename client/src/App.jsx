@@ -7,6 +7,7 @@ import AuthRoute from "./guards/AuthRoute";
 import { Routes, Route } from "react-router-dom";
 import axios from "axios";
 import { useEffect } from "react";
+import { getApiUri } from "./utils/getUri";
 
 const App = () => {
   const [auth, setAuth] = useState(null);
@@ -15,10 +16,9 @@ const App = () => {
   const [failureMessage, setFailureMessage] = useState("");
   const checkAuth = async () => {
     try {
-      const res = await axios.get(
-        `${import.meta.env.VITE_SERVER_URL}/check-auth`,
-        { withCredentials: true }
-      );
+      const res = await axios.get(getApiUri("/check-auth"), {
+        withCredentials: true,
+      });
       if (res.data.success) {
         console.log(res.data.message);
         setAuth(true);
@@ -64,7 +64,7 @@ const App = () => {
           }
         />
         <Route
-          path="/activity-logs"
+          path="/activity"
           element={
             <AuthRoute auth={auth}>
               <Activity />

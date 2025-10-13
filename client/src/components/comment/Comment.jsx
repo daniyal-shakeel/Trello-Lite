@@ -2,6 +2,8 @@ import "./Comments.scss";
 import { useState } from "react";
 import { Pencil, Trash2 } from "lucide-react";
 import axios from "axios";
+import { getApiUri } from "../../utils/getUri";
+
 const Comment = ({
   comment: c,
   setComments = () => console.log("Somehing went wrong"),
@@ -15,7 +17,7 @@ const Comment = ({
   const handleUpdateComment = async () => {
     try {
       const res = await axios.put(
-        `${import.meta.env.VITE_SERVER_URL}/api/comment/update/${c._id || ""}`,
+        getApiUri(`/api/comment/update/${c._id || ""}`),
         { updatedCommentText, taskId: c.taskId },
         { withCredentials: true }
       );
@@ -39,9 +41,7 @@ const Comment = ({
   const handleDeleteComment = async () => {
     try {
       const res = await axios.delete(
-        `${import.meta.env.VITE_SERVER_URL}/api/comment/delete/${c.taskId}/${
-          c._id
-        }`,
+        getApiUri(`/api/comment/delete/${c.taskId}/${c._id}`),
         { withCredentials: true }
       );
       if (res?.data?.success) {

@@ -3,6 +3,7 @@ import { AlertTriangle } from "lucide-react";
 import axios from "axios";
 import "./BoardDeleteConfirmationModal.css";
 import Message from "../../../ui/message/Message";
+import { getApiUri } from "../../../../utils/getUri";
 
 const BoardDeleteConfirmationModal = ({
   title,
@@ -21,7 +22,7 @@ const BoardDeleteConfirmationModal = ({
   const handleDelete = async () => {
     try {
       const res = await axios.delete(
-        `${import.meta.env.VITE_SERVER_URL}/api/board/delete-board/${boardId}`,
+        getApiUri(`/api/board/delete-board/${boardId}`),
         { withCredentials: true }
       );
       console.log(res.data);

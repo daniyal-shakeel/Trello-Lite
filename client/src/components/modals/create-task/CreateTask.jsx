@@ -3,6 +3,7 @@ import axios from "axios";
 import moment from "moment";
 import "./CreateTask.css";
 import Message from "../../../components/ui/message/Message";
+import { getApiUri } from "../../../utils/getUri";
 
 const CreateTask = ({ onClose, boards, activeBoard, tasks, setTasks }) => {
   const [title, setTitle] = useState("");
@@ -17,7 +18,7 @@ const CreateTask = ({ onClose, boards, activeBoard, tasks, setTasks }) => {
     if (!activeBoard) return;
     try {
       const res = await axios.get(
-        `${import.meta.env.VITE_SERVER_URL}/api/board/get-board/${activeBoard}`,
+        getApiUri(`/api/board/get-board/${activeBoard}`),
         { withCredentials: true }
       );
 
@@ -69,19 +70,14 @@ const CreateTask = ({ onClose, boards, activeBoard, tasks, setTasks }) => {
 
   const addTask = async () => {
     const task = getTaskData();
-
     try {
-      const res = await axios.post(
-        `${import.meta.env.VITE_SERVER_URL}/api/task/create`,
-        task,
-        { withCredentials: true }
-      );
+      const res = await axios.post(getApiUri("/api/task/create"), task, {
+        withCredentials: true,
+      });
 
       if (res.data.success) {
         setMessage({ type: "success", text: "Task created successfully!" });
-
         setTasks((prev) => [...prev, res.data.task]);
-
         setTitle("");
         setDescription("");
         setAssignTo("");

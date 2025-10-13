@@ -6,7 +6,7 @@ const DashboardSkeleton = () => {
       {}
       <aside className="ds-sidebar">
         {[...Array(4)].map((_, i) => (
-          <div className="ds-logo skeleton"></div>
+          <div key={i} className="ds-logo skeleton"></div>
         ))}
 
         <div className="ds-menu">
@@ -27,14 +27,14 @@ const DashboardSkeleton = () => {
         {}
         <div className="ds-stats">
           {[...Array(4)].map((_, i) => (
-            <div className="skeleton ds-stat-card"></div>
+            <div key={i} className="skeleton ds-stat-card"></div>
           ))}
         </div>
 
         {}
         <div className="ds-content">
           {[...Array(9)].map((_, i) => (
-            <div className="skeleton ds-board"></div>
+            <div key={i} className="skeleton ds-board"></div>
           ))}
         </div>
       </main>

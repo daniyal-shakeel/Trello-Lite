@@ -6,7 +6,7 @@ import {
   Trash2,
   UserPlus,
 } from "lucide-react";
-import "./Sidebar.css";
+import "./Sidebar.scss";
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import SidebarSkeleton from "../skeletons/sidebar/SidebarSkeleton.jsx";
@@ -16,6 +16,8 @@ import axios from "axios";
 import Message from "../ui/message/Message.jsx";
 import { getInitials } from "../../utils/getInitials.js";
 import Tooltip from "../ui/tooltip/Tooltip.jsx";
+import ModalPortal from "../modals/modal-portal/ModalPortal.jsx";
+import { getApiUri } from "../../utils/getUri.js";
 
 const Sidebar = ({
   activeBoard,
@@ -52,10 +54,9 @@ const Sidebar = ({
 
   const handleLogout = async () => {
     try {
-      const res = await axios.get(
-        `${import.meta.env.VITE_SERVER_URL}/api/user/logout`,
-        { withCredentials: true }
-      );
+      const res = await axios.get(getApiUri("/api/user/logout"), {
+        withCredentials: true,
+      });
       if (res.data.success) {
         setAuth(false);
         navigate("/login");
@@ -72,7 +73,7 @@ const Sidebar = ({
     }
     try {
       const res = await axios.post(
-        `${import.meta.env.VITE_SERVER_URL}/api/board/create-board`,
+        getApiUri("/api/board/create-board"),
         { name: boardName },
         { withCredentials: true }
       );
@@ -93,9 +94,7 @@ const Sidebar = ({
     console.log(boardId);
     try {
       const res = await axios.post(
-        `${
-          import.meta.env.VITE_SERVER_URL
-        }/api/board/collaborators/add/${boardId}`,
+        getApiUri(`/api/board/collaborators/add/${boardId}`),
         { collaborators },
         { withCredentials: true }
       );
@@ -149,6 +148,8 @@ const Sidebar = ({
     }
   }, [isModalOpen]);
 
+  useEffect(() => console.log(boards), [boards]);
+
   if (boardLoading) return <SidebarSkeleton />;
 
   return (
@@ -161,7 +162,7 @@ const Sidebar = ({
 
       {isOpen && (
         <>
-          {}
+          {/* Owned boards */}
           <div className="sidebar__boards">
             <div className="sidebar__boards-header">
               {!onAddBoard && <h1 className="sidebar__boards-title">Boards</h1>}
@@ -212,43 +213,73 @@ const Sidebar = ({
             {onAddBoard && error && <Message type="failure" text={error} />}
 
             <ul className="sidebar__boards-list">
-              {boards.map((board) => (
-                <li
-                  key={board._id}
-                  onClick={() => onBoardChange(board._id)}
-                  className={`sidebar__board-item ${
-                    activeBoard === board._id
-                      ? "sidebar__board-item--active"
-                      : ""
-                  }`}
-                >
-                  {board.name}
-                  <span className="sidebar__board-item-icons">
-                    <UserPlus
-                      onClick={(e) =>
-                        handleAddBoardCollaboratorIconClick(e, board)
-                      }
-                      width={20}
-                    />
-                    <Trash2
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setBoardToDelete(board);
-                        setShowConfirmationModal(true);
-                      }}
-                      width={20}
-                    />
-                  </span>
-                </li>
-              ))}
+              {boards
+                .filter((board) => !board.isShared) // only owned boards
+                .map((board) => (
+                  <li
+                    key={board._id}
+                    onClick={() => onBoardChange(board._id)}
+                    className={`sidebar__board-item ${
+                      activeBoard === board._id
+                        ? "sidebar__board-item--active"
+                        : ""
+                    }`}
+                  >
+                    {board.name}
+                    <span className="sidebar__board-item-icons">
+                      <UserPlus
+                        onClick={(e) =>
+                          handleAddBoardCollaboratorIconClick(e, board)
+                        }
+                        width={20}
+                      />
+                      <Trash2
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setBoardToDelete(board);
+                          setShowConfirmationModal(true);
+                        }}
+                        width={20}
+                      />
+                    </span>
+                  </li>
+                ))}
             </ul>
+          </div>
+
+          {/* Shared boards */}
+          <div className="sidebar__boards">
+            <div className="sidebar__boards-header">
+              <h1 className="sidebar__boards-title">Shared boards</h1>
+            </div>
+
+            <ul className="sidebar__boards-list">
+              {boards
+                .filter((board) => board.isShared) // only shared boards
+                .map((board) => (
+                  <li
+                    key={board._id}
+                    onClick={() => onBoardChange(board._id)}
+                    className={`sidebar__board-item ${
+                      activeBoard === board._id
+                        ? "sidebar__board-item--active"
+                        : ""
+                    }`}
+                  >
+                    {board.name}
+                  </li>
+                ))}
+            </ul>
+            {boards.filter((b) => b.isShared).length === 0 && (
+              <p className="no-shared-boards">No shared boards</p>
+            )}
           </div>
 
           {}
           <div className="sidebar__activity">
             <h1 className="sidebar__activity-title">Activity</h1>
             <div
-              onClick={() => navigate("/activity-logs")}
+              onClick={() => navigate("/activity")}
               className="sidebar__activity-log"
             >
               <Activity className="sidebar__activity-icon" />
@@ -285,31 +316,37 @@ const Sidebar = ({
 
       {}
       {isModalOpen && selectedBoard && (
-        <AddCollaborator
-          isOpen={isModalOpen}
-          onClose={() => setIsModalOpen(false)}
-          collaborators={collaborators}
-          setCollaborators={setCollaborators}
-          onConfirm={async (finalCollaborators) => {
-            return await addCollaborators(
-              selectedBoard._id,
-              finalCollaborators
-            );
-          }}
-        />
+        <ModalPortal>
+          <AddCollaborator
+            activeBoard={activeBoard}
+            isOpen={isModalOpen}
+            onClose={() => setIsModalOpen(false)}
+            collaborators={collaborators}
+            setCollaborators={setCollaborators}
+            onConfirm={async (finalCollaborators) => {
+              return await addCollaborators(
+                selectedBoard._id,
+                finalCollaborators
+              );
+            }}
+          />
+        </ModalPortal>
       )}
 
       {}
       {showConfirmationModal && boardToDelete && (
-        <BoardDeleteConfirmationModal
-          title={boardToDelete.name}
-          boardId={boardToDelete._id}
-          activeBoard={activeBoard}
-          onBoardChange={onBoardChange}
-          setBoards={setBoards}
-          isOpen={showConfirmationModal}
-          onClose={() => setShowConfirmationModal(false)}
-        />
+        <ModalPortal>
+          {" "}
+          <BoardDeleteConfirmationModal
+            title={boardToDelete.name}
+            boardId={boardToDelete._id}
+            activeBoard={activeBoard}
+            onBoardChange={onBoardChange}
+            setBoards={setBoards}
+            isOpen={showConfirmationModal}
+            onClose={() => setShowConfirmationModal(false)}
+          />
+        </ModalPortal>
       )}
     </div>
   );

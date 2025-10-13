@@ -13,7 +13,22 @@
   user-select: none;
 }
 
-.board__drag-icon-container{
+.board--disabled {
+  opacity: 0.6;
+  pointer-events: none;
+  cursor: not-allowed;
+}
+
+.board--disabled .board__status {
+  color: #6b7280;
+}
+
+.board--disabled .board__shared-badge {
+  background-color: #f3f4f6;
+  color: #9ca3af;
+}
+
+.board__drag-icon-container {
   position: relative;
 }
 
@@ -21,17 +36,17 @@
   cursor: grabbing;
 }
 
-.board__drag-icon{
-position: absolute;
+.board__drag-icon {
+  position: absolute;
   right: 50%;
   top: -31px;
   color: var(--secondary);
   transition: var(--transition);
   transform: rotate(90deg);
-  cursor:grab;
+  cursor: grab;
 }
 
-.board__drag-icon:hover{
+.board__drag-icon:hover {
   color: var(--foreground);
 }
 
@@ -42,12 +57,35 @@ position: absolute;
   gap: 12px;
 }
 
+.board__status-container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: 6px;
+  flex: 1;
+}
+
 .board__status {
   font-size: 18px;
   font-weight: 600;
   color: var(--foreground);
   text-transform: capitalize;
   margin: 0;
+}
+
+.board__shared-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--primary);
+  background-color: rgba(173, 70, 255, 0.15);
+  border-radius: 12px;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+  box-shadow: 0 1px 2px rgba(173, 70, 255, 0.2);
 }
 
 .board__actions {
@@ -87,13 +125,11 @@ position: absolute;
   color: var(--foreground);
 }
 
-
 .board__tasks {
   display: flex;
   flex-direction: column;
   gap: 12px;
 }
-
 
 @media (max-width: 768px) {
   .board {

@@ -1,7 +1,10 @@
 import "./AddCollaborator.css";
 import { ArrowRight, UserPlus, X } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import Message from "../../ui/message/Message.jsx";
+import axios from "axios";
+import { getApiUri } from "../../../utils/getUri.js";
+import CollaboratorsSkeleton from "../../skeletons/collaborators/CollaboratorsSkeleton.jsx";
 
 const AddCollaborator = ({
   isOpen,
@@ -9,20 +12,44 @@ const AddCollaborator = ({
   collaborators,
   setCollaborators,
   onConfirm,
+  activeBoard,
 }) => {
   const [input, setInput] = useState("");
   const [message, setMessage] = useState({ type: "", text: "" });
+  const [loading, setLoading] = useState(true);
+
+  const getAllCollaborators = async () => {
+    try {
+      setLoading(true);
+      const res = await axios.get(
+        getApiUri(
+          `/api/board/collaborators/get-all-collaborators/${activeBoard}`
+        ),
+        { withCredentials: true }
+      );
+
+      if (res?.data?.success) {
+        setCollaborators(
+          res.data?.collaborators.map((collab) => collab.collaborator.email)
+        );
+      } else {
+        console.log(res.data?.message);
+      }
+    } catch (error) {
+      console.log("An error occured in getAllCollaborators:", error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   if (!isOpen) return null;
 
   const handleAdd = () => {
     if (!input.trim()) return;
-
     const newCollaborators = input
       .split(",")
       .map((c) => c.trim())
       .filter(Boolean);
-
     setCollaborators([...collaborators, ...newCollaborators]);
     setInput("");
   };
@@ -39,10 +66,8 @@ const AddCollaborator = ({
       });
       return;
     }
-
     try {
       const success = await onConfirm(collaborators);
-console.log(collaborators)
       if (success) {
         setMessage({
           type: "success",
@@ -58,6 +83,10 @@ console.log(collaborators)
       });
     }
   };
+
+  useEffect(() => {
+    getAllCollaborators();
+  }, []);
 
   return (
     <div className="modal-overlay" onClick={onClose}>
@@ -90,18 +119,29 @@ console.log(collaborators)
             </button>
           </div>
 
-          {collaborators.length > 0 && (
+          {/* Loading skeleton */}
+          {loading ? (
             <ul className="collaborators-list">
-              {collaborators.map((c, i) => (
-                <li key={i} className="collaborator-item">
-                  <span>{c}</span>
-                  <X
-                    className="collaborator-remove"
-                    onClick={() => handleRemove(c)}
-                  />
+              {[...Array(4)].map((_, i) => (
+                <li key={i}>
+                  <CollaboratorsSkeleton />
                 </li>
               ))}
             </ul>
+          ) : (
+            collaborators.length > 0 && (
+              <ul className="collaborators-list">
+                {collaborators.map((c, i) => (
+                  <li key={i} className="collaborator-item">
+                    <span>{c}</span>
+                    <X
+                      className="collaborator-remove"
+                      onClick={() => handleRemove(c)}
+                    />
+                  </li>
+                ))}
+              </ul>
+            )
           )}
 
           <Message type={message.type} text={message.text} />

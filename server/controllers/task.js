@@ -5,19 +5,11 @@ import { Board, BoardCollaborator } from "../models/board.js";
 import { validateString } from "../utils/string.js";
 import { sanitizeObjectId } from "../utils/sanitizeObjectId.js";
 import { task } from "../utils/default-values/task.js";
+import { logActivity } from "../utils/logActivity.js";
 
 const create = async (req, res) => {
   try {
     const { title, description, assignTo, board: boardObj, dueDate } = req.body;
-
-    console.log("Incoming data:", {
-      title,
-      description,
-      assignTo,
-      boardObj,
-      dueDate,
-    });
-
     if (!title || !boardObj?.name || !assignTo || !boardObj?.id || !dueDate) {
       return res.json({
         success: false,
@@ -65,19 +57,10 @@ const create = async (req, res) => {
         });
       }
 
-      const boardCollab = await BoardCollaborator.findOne({
+      const isCollaborator = await BoardCollaborator.exists({
         boardId: board._id,
+        collaborator: user._id,
       });
-      if (!boardCollab) {
-        return res.json({
-          success: false,
-          message: "This board has no collaborators.",
-        });
-      }
-
-      const isCollaborator = boardCollab.collaborators.includes(
-        user.email.toLowerCase()
-      );
 
       if (!isCollaborator) {
         return res.json({
@@ -104,6 +87,14 @@ const create = async (req, res) => {
       { path: "assignee", select: "name email" },
       { path: "createdBy", select: "name email" },
     ]);
+
+    logActivity({
+      user: req.payload?._id,
+      action: "created_task",
+      board: board._id,
+      task: task._id,
+      message: `${task.createdBy?.name || "Someone"} created a task *${task.title}* on board *${board.name}*`
+    });
 
     return res.json({
       success: true,
@@ -139,27 +130,27 @@ const getAllTasks = async (req, res) => {
       });
     }
 
-    const boardCollab = await BoardCollaborator.findOne({ boardId: board._id });
-    if (!boardCollab) {
-      return res.json({
-        success: false,
-        message: "This board has no collaborators.",
-      });
-    }
+    const requesterId = req.payload?._id;
+    const isOwner = board.user?.toString() === requesterId;
+    const isCollaborator = await BoardCollaborator.exists({
+      boardId: board._id,
+      collaborator: new mongoose.Types.ObjectId(requesterId),
+    });
 
-    const requesterEmail = req.payload?.email?.toLowerCase();
-    const isCollaborator =
-      boardCollab.collaborators.includes(requesterEmail) ||
-      board.user?.toString() === req.payload?._id;
-
-    if (!isCollaborator) {
+    if (!isOwner && !isCollaborator) {
       return res.json({
         success: false,
         message: "You are not authorized to view tasks for this board.",
       });
     }
 
-    const tasks = await Task.find({ boardId: board._id })
+    const tasks = await Task.find({
+      boardId: board._id,
+      $or: [
+        { createdBy: requesterId },
+        { assignee: requesterId },
+      ],
+    })
       .populate("assignee", "name email")
       .populate("createdBy", "name email")
       .sort({ dueDate: 1, createdAt: -1 });
@@ -173,7 +164,7 @@ const getAllTasks = async (req, res) => {
       tasks,
     });
   } catch (err) {
-    console.error("Get tasks error:", err);
+    console.error("An error occured in getAllTasks function: ", err.message);
     return res.json({
       success: false,
       message: "Internal server error.",
@@ -257,6 +248,14 @@ const updateTask = async (req, res) => {
     task.title = updatedTaskTitle;
     await task.save();
 
+    logActivity({
+      user: req.payload?._id,
+      action: "updated_task",
+      task: task._id,
+      board: boardId,
+      message: `Task title updated to *${updatedTaskTitle}* on board *${board.name}*`
+    });
+
     return res.json({
       success: true,
       message: `Title updated to ${updatedTaskTitle}`,
@@ -310,7 +309,7 @@ const deleteTask = async (req, res) => {
     const user = await User.exists({ _id: userId });
     if (!user) return res.json({ success: false, message: "User not found" });
 
-    const board = await Board.exists({ _id: boardId });
+    const board = await Board.findOne({ _id: boardId });
     if (!board) return res.json({ success: false, message: "Board not found" });
 
     const task = await Task.findOne({
@@ -319,10 +318,22 @@ const deleteTask = async (req, res) => {
       createdBy: userId,
     });
     if (!task) return res.json({ success: false, message: "Task not found" });
+    let taskTitle = task.title;
+    const result = await task.deleteOne();
 
-    await task.deleteOne();
+    if (result?.acknowledged && result?.deletedCount > 0) {
+      logActivity({
+        user: userId,
+        action: "deleted_task",
+        board: boardId,
+        task: task._id,
+        message: `Deleted task *${taskTitle}* from board *${board.name}*`
+      });
+    }
+
     return res.json({ success: true, message: "Task deleted" });
   } catch (error) {
+
     console.log("An error occured in deleteTask function: ", error.message);
     return res.json({ success: false, message: "Error in deleting task" });
   }

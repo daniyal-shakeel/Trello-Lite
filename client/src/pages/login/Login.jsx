@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { Navigate, useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import Message from "../../components/ui/message/Message";
+import { getApiUri, getRedirectUri } from "../../utils/getUri";
 
 const Login = ({ auth }) => {
   const location = useLocation();
@@ -87,7 +88,7 @@ const Login = ({ auth }) => {
 
     try {
       const res = await axios.post(
-        `${import.meta.env.VITE_SERVER_URL}/api/user/${endpoint}`,
+        getApiUri(`/api/user/${endpoint}`),
         { ...payload },
         { withCredentials: true }
       );
@@ -98,18 +99,22 @@ const Login = ({ auth }) => {
         setPassword("");
         setPasswordMessage("");
         setIsPasswordStrong(false);
-        setSuccessMessage(
-          "success",
-          "Account created successfully! Please log in."
-        );
+
+        if (activeTab === "register") {
+          setSuccessMessage("Account created successfully! Please log in.");
+          setFailureMessage("");
+          setActiveTab("login");
+        } else {
+          setSuccessMessage("Logged in successfully!");
+          setFailureMessage("");
+          window.location.href = getRedirectUri("/dashboard");
+        }
       } else if (res.data.redirect) {
         navigate(`/login?error=${encodeURIComponent(res.data.message)}`);
         console.log(res.data.message.toString());
       } else {
-        setFailureMessage(
-          "failure",
-          res.data.message || "Something went wrong."
-        );
+        setFailureMessage(res.data.message || "Something went wrong.");
+        setSuccessMessage("");
         console.log(res.data.message);
       }
     } catch (error) {
@@ -118,6 +123,7 @@ const Login = ({ auth }) => {
         error.message
       );
       setFailureMessage("Server error. Please try again later.");
+      setSuccessMessage("");
     } finally {
       setLoading(false);
     }
@@ -147,6 +153,8 @@ const Login = ({ auth }) => {
         </p>
 
         {failureMessage && <Message type="failure" text={failureMessage} />}
+        {successMessage && <Message type="success" text={successMessage} />}
+
         <div id="login-switch" className="login__switch">
           <button
             onClick={() => handleSwitchTab("login")}
@@ -250,9 +258,6 @@ const Login = ({ auth }) => {
                 : "Create account"}
             </span>
           </button>
-
-          {successMessage && <Message type="success" text={successMessage} />}
-          {failureMessage && <Message type="failure" text={successMessage} />}
         </form>
 
         <div className="login__divider">or</div>

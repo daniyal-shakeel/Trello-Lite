@@ -5,6 +5,7 @@ import { validateString } from "../utils/string.js";
 import { sanitizeObjectId } from "../utils/sanitizeObjectId.js";
 import { comment } from "../utils/default-values/comment.js";
 import { mapComment } from "../utils/mapper.js";
+import { logActivity } from "../utils/logActivity.js"
 
 const createComment = async (req, res) => {
   let { taskId, commentText: content } = req.body || {};
@@ -72,21 +73,26 @@ const createComment = async (req, res) => {
       authorId,
       content,
     });
+    if (!newComment)
+      return res.json({
+        success: false,
+        message: "Something went wrong. Try again",
+      });
+
+    const authorDoc = await User.findOne({ _id: newComment.authorId });
+    logActivity({
+      user: authorId,
+      action: "created_comment",
+      task: taskId,
+      message: `${authorDoc.name || "Someone"} commented on a task *${newComment.content}*`
+    });
+
     newComment = await newComment.populate([
       {
         path: "authorId",
         select: "name",
       },
     ]);
-
-    if (!newComment)
-      return res.json({
-        success: false,
-        message: "Something went wrong. Try again",
-      });
-    console.log(newComment.authorId);
-    console.log(payload._id);
-    console.log(newComment);
     const updatedComment = {
       _id: newComment._id,
       avatar:
@@ -95,7 +101,7 @@ const createComment = async (req, res) => {
           .map((word) => word[0])
           .join("")
           .toUpperCase() || "DN",
-      name: newComment?.authorId.name || "Dummy Name",
+      name: newComment?.authorId.name || "Unknown",
       createdAt: newComment.createdAt,
       text: newComment.content,
       canEdit: String(newComment?.authorId._id) === String(payload._id),
@@ -210,6 +216,7 @@ const updateComment = async (req, res) => {
   }
 
   const existingComment = await Comment.findOne({ _id: commentId });
+  let existingContent = existingComment.content;
   if (!existingComment)
     return res.json({
       success: false,
@@ -246,7 +253,12 @@ const updateComment = async (req, res) => {
       message: "Something went wrong. Try again",
     });
 
-  console.log(updatedComment);
+  logActivity({
+    user: req.payload._id,
+    action: "updated_comment",
+    task: taskId,
+    message: `${updatedComment?.authorId?.name || "Someone"} edited a comment from *${existingContent}* to *${updatedComment.content}*`
+  });
 
   return res.json({
     success: true,
@@ -286,7 +298,7 @@ const deleteComment = async (req, res) => {
   authorId = authorCheck.validId;
 
   try {
-    const task = await Task.exists({ _id: taskId });
+    const task = await Task.findOne({ _id: taskId });
     if (!task)
       return res.json({ success: false, message: "Task is not found" });
 
@@ -301,6 +313,14 @@ const deleteComment = async (req, res) => {
 
     comment.isDeleted = true;
     await comment.save();
+
+    const authorDoc = await User.findOne({ _id: authorId });
+    logActivity({
+      user: authorId,
+      action: "deleted_comment",
+      task: taskId,
+      message: `*${authorDoc.name}* has deleted comment *${comment.content}* on a task *${task.title}*`
+    });
     return res.json({ success: true, message: "Comment deleted" });
   } catch (error) {
     console.log("An error occured in deleteComment function: ", error.message);

@@ -1,5 +1,4 @@
 export const mapComment = (comment, payload) => {
-  console.log(comment);
   return {
     _id: comment._id,
     taskId: comment.taskId,

@@ -6,6 +6,7 @@ import {
   changeStatus,
   addCollaborators,
   getBoard,
+  getAllCollaborators,
 } from "../controllers/board.js";
 
 const boardRouter = express.Router();
@@ -16,5 +17,6 @@ boardRouter.get("/get-board/:boardId", getBoard);
 boardRouter.delete("/delete-board/:id", deleteBoard);
 boardRouter.post("/change-status/:status", changeStatus);
 boardRouter.post("/collaborators/add/:boardId", addCollaborators);
+boardRouter.get("/collaborators/get-all-collaborators/:boardId", getAllCollaborators);
 
 export { boardRouter };

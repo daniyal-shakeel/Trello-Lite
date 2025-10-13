@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import "./Task.css";
 import OpenTask from "../modals/open-task/OpenTask";
+import ModalPortal from "../modals/modal-portal/ModalPortal"
 
 const Task = ({
   task,
@@ -33,12 +34,14 @@ const Task = ({
       </div>
 
       {isModalOpen && (
-        <OpenTask
-          isOpen={isModalOpen}
-          onClose={() => setIsModalOpen(false)}
-          task={task}
-          setTasks={setTasks}
-        />
+        <ModalPortal>
+          <OpenTask
+            isOpen={isModalOpen}
+            onClose={() => setIsModalOpen(false)}
+            task={task}
+            setTasks={setTasks}
+          />
+        </ModalPortal>
       )}
     </div>
   );

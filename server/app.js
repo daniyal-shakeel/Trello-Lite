@@ -9,6 +9,8 @@ import { boardRouter } from "./routes/board.js";
 import { userAuth } from "./middlewares/userAuth.js";
 import { taskRouter } from "./routes/task.js";
 import { commentRouter } from "./routes/comment.js";
+import { activityRouter } from "./routes/activity.js";
+import "./listeners/activityLogger.js"
 
 const app = express();
 export const port = process.env.PORT || 3000;
@@ -43,6 +45,7 @@ app.use("/api/user", userRouter);
 app.use("/api/board", userAuth, boardRouter);
 app.use("/api/task", userAuth, taskRouter);
 app.use("/api/comment", userAuth, commentRouter);
+app.use("/api/activity", userAuth, activityRouter);
 
 app.listen(port, () =>
   console.log(`Server is running on http://localhost:${port}`)

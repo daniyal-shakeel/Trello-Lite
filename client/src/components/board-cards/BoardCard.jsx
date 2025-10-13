@@ -5,6 +5,7 @@ import BoardCardSkeleton from "../skeletons/board-card/BoardCardSkeleton";
 import { GripVertical, MoreVertical } from "lucide-react";
 import BoardStatusDropdown from "../ui/dropdown/BoardStatusDropdown";
 import axios from "axios";
+import { getApiUri } from "../../utils/getUri";
 
 const BoardCard = ({
   name,
@@ -14,11 +15,12 @@ const BoardCard = ({
   setTasks = () => {},
   setBoards = () => {},
   loading = false,
+  isShared,
+  activeBoard, // selected board id
 }) => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [currentStatus, setCurrentStatus] = useState(status);
   const dropdownRef = useRef(null);
-  console.log(tasks);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -36,15 +38,12 @@ const BoardCard = ({
   const handleChangeStatus = async (newStatus) => {
     try {
       const response = await axios.post(
-        `${
-          import.meta.env.VITE_SERVER_URL
-        }/api/board/change-status/${newStatus}`,
+        getApiUri(`/api/board/change-status/${newStatus}`),
         { boardId },
         { withCredentials: true }
       );
 
       if (response.data.success) {
-        console.log(response.data.message);
         setCurrentStatus(newStatus);
         setBoards((prevBoards) =>
           prevBoards.map((b) =>
@@ -65,24 +64,36 @@ const BoardCard = ({
     return <BoardCardSkeleton />;
   }
 
+  const isActiveBoard = boardId === activeBoard;
+
   return (
-    <div id="board" className="board">
+    <div
+      id="board"
+      className={`board ${!isActiveBoard ? "board--disabled" : ""}`}
+    >
       <div className="board__drag-icon-container">
         <GripVertical className="board__drag-icon" />
       </div>
       <div className="board__header">
-        <h1 className="board__status">{name}</h1>
+        <div className="board__status-container">
+          {isShared && <span className="board__shared-badge">Shared</span>}
+          <h1 className="board__status">{name}</h1>
+        </div>
         <div className="board__actions">
           <p className="board__count">{tasks.length}</p>
           <div className="dropdown-wrapper" ref={dropdownRef}>
             <button
               className="board__menu-btn"
-              onClick={() => setDropdownOpen((prev) => !prev)}
+              disabled={!isActiveBoard}
+              onClick={() => {
+                if (isActiveBoard) {
+                  setDropdownOpen((prev) => !prev);
+                }
+              }}
             >
-              <MoreVertical size={18} />
+              {!isShared && <MoreVertical size={18} />}
             </button>
-
-            {dropdownOpen && (
+            {dropdownOpen && isActiveBoard && (
               <BoardStatusDropdown
                 title="Change Status"
                 statuses={["active", "draft", "archived"]}
@@ -95,11 +106,9 @@ const BoardCard = ({
       </div>
 
       <div className="board__tasks">
-        <div className="board__tasks">
-          {tasks.map((task) => (
-            <Task task={task} setTasks={setTasks} />
-          ))}
-        </div>
+        {tasks.map((task) => (
+          <Task key={task._id} task={task} setTasks={setTasks} />
+        ))}
       </div>
     </div>
   );

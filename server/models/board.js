@@ -12,7 +12,7 @@ const boardSchema = new mongoose.Schema(
     user: {
       type: mongoose.Schema.Types.ObjectId,
       ref: User.modelName,
-      required:true
+      required: true,
     },
     isDefault: { type: Boolean, default: board.isDefault },
     status: {
@@ -32,13 +32,11 @@ const collaboratorSchema = new mongoose.Schema(
       ref: Board.modelName,
       required: true,
     },
-    collaborators: [
-      {
-        type: String,
-        trim: true,
-        lowercase: true,
-      },
-    ],
+    collaborator: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: User.modelName,
+      required: true,
+    },
   },
   { timestamps: true }
 );
