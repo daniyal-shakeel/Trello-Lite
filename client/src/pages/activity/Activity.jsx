@@ -75,14 +75,22 @@ const Activity = () => {
 
     if (filters.search.trim()) {
       const q = filters.search.toLowerCase();
-      filtered = filtered.filter(
-        (a) =>
-          a.user?.toLowerCase().includes(q) ||
-          a.board?.toLowerCase().includes(q) ||
-          a.action?.toLowerCase().includes(q) ||
-          a.message?.toLowerCase().includes(q) ||
-          a.task?.toLowerCase().includes(q)
-      );
+
+      filtered = filtered.filter((a) => {
+        const user = a.user?.toLowerCase() || "";
+        const board = a.board?.toLowerCase() || "";
+        const task = a.task?.toLowerCase() || "";
+        const message = a.message?.toLowerCase() || "";
+        const action = a.action?.toLowerCase() || "";
+
+        return (
+          user.includes(q) ||
+          board.includes(q) ||
+          task.includes(q) ||
+          message.includes(q) ||
+          action.includes(q)
+        );
+      });
     }
 
     filtered.sort((a, b) => new Date(b.when) - new Date(a.when));
@@ -162,27 +170,6 @@ const Activity = () => {
       <div className="activity-log__toolbar">
         <div className="activity-log__filters">
           <div className="activity-log__filter">
-            <label htmlFor="filter-user" className="activity-log__filter-label">
-              User
-            </label>
-            <select
-              id="filter-user"
-              className="activity-log__filter-select"
-              value={filters.user}
-              onChange={(e) =>
-                setFilters((f) => ({ ...f, user: e.target.value }))
-              }
-            >
-              <option>All Users</option>
-              {[...new Set(activities.map((a) => a.user || "Unknown"))].map(
-                (u) => (
-                  <option key={u}>{u}</option>
-                )
-              )}
-            </select>
-          </div>
-
-          <div className="activity-log__filter">
             <label
               htmlFor="filter-action"
               className="activity-log__filter-label"
@@ -249,35 +236,34 @@ const Activity = () => {
               <option>Last 30 Days</option>
             </select>
           </div>
-        </div>
+          <div className="activity-log__actions">
+            <div className="activity-log__search">
+              <label
+                className="activity-log__search-label"
+                htmlFor="activity-log-search"
+              >
+                Search
+              </label>
+              <input
+                id="activity-log-search"
+                className="activity-log__search-input"
+                placeholder="Search activities..."
+                type="search"
+                value={filters.search}
+                onChange={(e) =>
+                  setFilters((f) => ({ ...f, search: e.target.value }))
+                }
+              />
+            </div>
 
-        <div className="activity-log__actions">
-          <div className="activity-log__search">
-            <label
-              className="activity-log__search-label"
-              htmlFor="activity-log-search"
+            <button
+              className="activity-log__reset-btn"
+              title="Reset all filters"
+              onClick={resetFilters}
             >
-              Search
-            </label>
-            <input
-              id="activity-log-search"
-              className="activity-log__search-input"
-              placeholder="Search activities..."
-              type="search"
-              value={filters.search}
-              onChange={(e) =>
-                setFilters((f) => ({ ...f, search: e.target.value }))
-              }
-            />
+              Reset Filters
+            </button>
           </div>
-
-          <button
-            className="activity-log__reset-btn"
-            title="Reset all filters"
-            onClick={resetFilters}
-          >
-            Reset Filters
-          </button>
         </div>
       </div>
 

@@ -229,7 +229,7 @@ const updateTask = async (req, res) => {
     });
   }
   try {
-    const board = await Board.exists({ _id: boardId });
+    const board = await Board.findOne({ _id: boardId });
     if (!board)
       return res.json({
         success: false,
