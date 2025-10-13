@@ -24,25 +24,8 @@ const boardSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-const Board = mongoose.models.Board || mongoose.model("Board", boardSchema);
-const collaboratorSchema = new mongoose.Schema(
-  {
-    boardId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: Board.modelName,
-      required: true,
-    },
-    collaborator: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: User.modelName,
-      required: true,
-    },
-  },
-  { timestamps: true }
-);
+const Board =
+  mongoose.models.Board ||
+  mongoose.model("Board", boardSchema);
 
-const BoardCollaborator =
-  mongoose.models.BoardCollaborator ||
-  mongoose.model("Board Collaborator", collaboratorSchema);
-
-export { Board, BoardCollaborator };
+export { Board };

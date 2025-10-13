@@ -1,3 +1,7 @@
+import mongoose from "mongoose";
+import { User } from "./user.js";
+import { Board } from "./board.js";
+
 const collaboratorSchema = new mongoose.Schema(
      {
           boardId: {
@@ -17,3 +21,5 @@ const collaboratorSchema = new mongoose.Schema(
 const BoardCollaborator =
      mongoose.models.BoardCollaborator ||
      mongoose.model("Board Collaborator", collaboratorSchema);
+
+export { BoardCollaborator }

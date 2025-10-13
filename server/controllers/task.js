@@ -1,7 +1,8 @@
 import mongoose from "mongoose";
 import { Task } from "../models/task.js";
 import { User } from "../models/user.js";
-import { Board, BoardCollaborator } from "../models/board.js";
+import { Board } from "../models/board.js";
+import { BoardCollaborator } from "../models/BoardCollaborator.js";
 import { validateString } from "../utils/string.js";
 import { sanitizeObjectId } from "../utils/sanitizeObjectId.js";
 import { task } from "../utils/default-values/task.js";

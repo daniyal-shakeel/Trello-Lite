@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { user } from "../utils/default-values/user.js";
 
 const userSchema = new mongoose.Schema(
   {
@@ -18,8 +19,9 @@ const userSchema = new mongoose.Schema(
 
     password: {
       type: String,
-      minlength: 6,
-      select: false,
+      minlength: user.passMinLength,
+      maxLength: user.passMaxLength,
+      select: user.passSelect,
     },
 
     googleId: {

@@ -1,4 +1,5 @@
-import { Board, BoardCollaborator } from "../models/board.js";
+import { Board } from "../models/board.js";
+import { BoardCollaborator } from "../models/BoardCollaborator.js";
 import { User } from "../models/user.js";
 import mongoose from "mongoose";
 import { isValidEmail } from "../utils/email/helper.js";
