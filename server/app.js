@@ -1,5 +1,5 @@
-import express from "express";
 import "dotenv/config";
+import express from "express";
 import { connectDB } from "./config/db.js";
 import { redirectToGoogle, handleGoogleCallback } from "./controllers/user.js";
 import cors from "cors";
@@ -13,7 +13,7 @@ import { activityRouter } from "./routes/activity.js";
 import "./listeners/activityLogger.js"
 
 const app = express();
-export const port = process.env.PORT || 3000;
+const port = process.env.PORT || 3000;
 
 connectDB();
 app.use(cookieParser());
