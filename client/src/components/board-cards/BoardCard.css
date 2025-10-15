@@ -15,12 +15,16 @@
 
 .board--disabled {
   opacity: 0.6;
-  pointer-events: none;
-  cursor: not-allowed;
 }
 
-.board--disabled .board__status {
-  color: #6b7280;
+.board--disabled * {
+  pointer-events: none;
+}
+
+.board--disabled .board__drag-icon-container,
+.board--disabled .board__drag-icon {
+  pointer-events: auto;
+  cursor: grab;
 }
 
 .board--disabled .board__shared-badge {

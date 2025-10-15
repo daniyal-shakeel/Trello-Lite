@@ -213,8 +213,11 @@ const Sidebar = ({
             {onAddBoard && error && <Message type="failure" text={error} />}
 
             <ul className="sidebar__boards-list">
-              {boards
-                .filter((board) => !board.isShared) // only owned boards
+              {[...boards]
+                .filter((board) => !board.isShared)
+                .sort((a, b) =>
+                  a._id === activeBoard ? -1 : b._id === activeBoard ? 1 : 0
+                )
                 .map((board) => (
                   <li
                     key={board._id}
@@ -256,6 +259,9 @@ const Sidebar = ({
             <ul className="sidebar__boards-list">
               {boards
                 .filter((board) => board.isShared) // only shared boards
+                .sort((a, b) =>
+                  a._id === activeBoard ? -1 : b._id === activeBoard ? 1 : 0
+                )
                 .map((board) => (
                   <li
                     key={board._id}

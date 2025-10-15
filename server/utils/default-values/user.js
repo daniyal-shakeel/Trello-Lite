@@ -1,5 +1,5 @@
 export const user = {
      passMinLength: 6,
-     passMaxLength: 50,
+     passMaxLength: 80,
      passSelect: false
 }

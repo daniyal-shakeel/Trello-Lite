@@ -9,7 +9,6 @@ const Navbar = ({
   tasks,
   setTasks,
   boardDescription = "Manage your personal tasks and goals",
-  taskLoading,
   statuses = ["active", "draft", "archived"],
   activeStatus,
   onStatusChange,
@@ -57,10 +56,6 @@ const Navbar = ({
       document.body.style.overflow = "auto";
     }
   }, [isTaskModalOpen]);
-
-  if (taskLoading) {
-    return <NavbarSkeleton />;
-  }
 
   return (
     <>

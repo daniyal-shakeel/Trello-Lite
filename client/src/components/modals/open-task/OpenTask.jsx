@@ -7,7 +7,7 @@ import Message from "../../../components/ui/message/Message.jsx";
 import moment from "moment";
 import Comment from "../../../components/comment/Comment.jsx";
 import { getApiUri } from "../../../utils/getUri.js";
-import CommentsSkeleton from "../../skeletons/comments/commentsSkeleton.jsx";
+import CommentsSkeleton from "../../skeletons/comments/CommentsSkeleton.jsx";
 import Activity from "../../activity/Activity.jsx";
 import ActivityComponentSkeleton from "../../skeletons/activity-component/ActivityComponentSkeleton.jsx";
 

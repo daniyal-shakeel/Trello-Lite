@@ -16,7 +16,8 @@ const BoardCard = ({
   setBoards = () => {},
   loading = false,
   isShared,
-  activeBoard, // selected board id
+  activeBoard, 
+  dragListeners,
 }) => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [currentStatus, setCurrentStatus] = useState(status);
@@ -72,7 +73,7 @@ const BoardCard = ({
       className={`board ${!isActiveBoard ? "board--disabled" : ""}`}
     >
       <div className="board__drag-icon-container">
-        <GripVertical className="board__drag-icon" />
+        <GripVertical {...(dragListeners || {})} className="board__drag-icon" />
       </div>
       <div className="board__header">
         <div className="board__status-container">

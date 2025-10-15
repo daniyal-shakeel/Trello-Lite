@@ -209,7 +209,7 @@ const Activity = () => {
               }
             >
               <option>All Boards</option>
-              {[...new Set(activities.map((a) => a.board || "No Board"))].map(
+              {[...new Set(activities.map((a) => a.board || ""))].map(
                 (b) => (
                   <option key={b}>{b}</option>
                 )
