@@ -34,7 +34,6 @@
 .navbar__actions {
   display: flex;
   align-items: center;
-  gap: 16px;
 
 }
 
@@ -84,6 +83,7 @@
   cursor: pointer;
   transition: var(--transition);
   white-space: nowrap;
+  margin-left: 16px;
 }
 
 .navbar__add-task:hover {
