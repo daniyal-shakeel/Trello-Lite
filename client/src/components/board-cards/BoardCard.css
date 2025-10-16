@@ -44,7 +44,7 @@
   position: absolute;
   right: 50%;
   top: -31px;
-  color: var(--secondary);
+  color: var(--muted-foreground);
   transition: var(--transition);
   transform: rotate(90deg);
   cursor: grab;
