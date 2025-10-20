@@ -1,4 +1,5 @@
 import { verifyToken } from "../utils/jwt.js";
+import { MESSAGES } from "../constants/messages.js";
 
 const userAuth = (req, res, next) => {
   try {
@@ -7,13 +8,13 @@ const userAuth = (req, res, next) => {
     if (!token) {
       return res.json({
         success: false,
-        message: "You must be logged in to access this route.",
+        message: MESSAGES.AUTH.ERROR.LOGIN_REQUIRED,
       });
     }
 
     const payload = verifyToken(token, process.env.JWT_SECRET);
     if (!payload)
-      return res.json({ success: false, message: "Token verificatin failed" });
+      return res.json({ success: false, message: MESSAGES.AUTH.ERROR.TOKEN_VERIFICATION_FAILED });
 
     req.payload = payload;
     next();
@@ -21,7 +22,7 @@ const userAuth = (req, res, next) => {
     console.error("Authentication failed:", err.message);
     return res.json({
       success: false,
-      message: "Invalid or expired session. Please log in again",
+      message: MESSAGES.AUTH.ERROR.SESSION_EXPIRED,
     });
   }
 };

@@ -1,6 +1,7 @@
 import { Activity } from "../models/activity.js";
 import { sanitizeObjectId } from "../utils/sanitizeObjectId.js";
 import { activityResponses } from "../utils/default-values/activity.js";
+import { MESSAGES } from "../constants/messages.js";
 
 const getAllActivities = async (req, res) => {
      let { _id: userId } = req.payload || {};
@@ -19,7 +20,7 @@ const getAllActivities = async (req, res) => {
                ])
                .lean();
 
-          if (activities.length === 0) return res.json({ success: false, message: "No activity found" });
+          if (activities.length === 0) return res.json({ success: false, message: MESSAGES.ACTIVITY.INFO.NO_ACTIVITIES_FOUND });
           const formatted = activities.map(act => ({
                _id: act._id,
                user: act.user?.name || null,
@@ -33,16 +34,16 @@ const getAllActivities = async (req, res) => {
                __v: act.__v
           }));
 
-          return res.json({ success: true, message: "Activities fetched successfully", activities: formatted })
+          return res.json({ success: true, message: MESSAGES.ACTIVITY.SUCCESS.FETCHED_SUCCESSFULLY, activities: formatted })
      } catch (error) {
           console.log("An error occured in getAllActivities function: ", error.message);
-          return res.json({ success: false, message: "Something went wrong fetching activities" })
+          return res.json({ success: false, message: MESSAGES.ACTIVITY.ERROR.FETCH_FAILED })
      }
 }
 
 const getActivitiesByTask = async (req, res) => {
      const { taskId } = req.params || {};
-     if (!taskId) return res.json({ success: false, message: "Task ID is required" });
+     if (!taskId) return res.json({ success: false, message: MESSAGES.ACTIVITY.VALIDATION.TASK_ID_REQUIRED });
 
      const taskCheck = sanitizeObjectId(taskId);
      if (!taskCheck.success) {
@@ -65,7 +66,7 @@ const getActivitiesByTask = async (req, res) => {
           if (!foundActivities || foundActivities.length === 0) {
                return res.json({
                     success: true,
-                    message: "No activity found for this task. Showing mock data.",
+                    message: MESSAGES.ACTIVITY.INFO.NO_ACTIVITIES_FOR_TASK,
                     activities: defaultActivities,
                });
           }
@@ -88,7 +89,7 @@ const getActivitiesByTask = async (req, res) => {
 
           return res.json({
                success: true,
-               message: "Activities fetched successfully",
+               message: MESSAGES.ACTIVITY.SUCCESS.FETCHED_SUCCESSFULLY,
                activities: formatted,
                activityResponses
           });
@@ -99,7 +100,7 @@ const getActivitiesByTask = async (req, res) => {
           );
           return res.json({
                success: false,
-               message: "Something went wrong fetching activities for this task",
+               message: MESSAGES.ACTIVITY.ERROR.FETCH_FAILED_FOR_TASK,
           });
      }
 

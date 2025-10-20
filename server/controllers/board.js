@@ -7,24 +7,25 @@ import { sendMail } from "../utils/email/send.js";
 import { collaboratorInviteTemplate } from "../utils/email/templates/collaboratorInvite.js";
 import { sanitizeObjectId } from "../utils/sanitizeObjectId.js";
 import { logActivity } from "../utils/logActivity.js";
+import {MESSAGES} from "../constants/messages.js";
 
 const createBoard = async (req, res) => {
   const { name } = req.body;
   const payload = req.payload;
-  if (!name) return res.json({ success: false, message: "Name is required" });
+  if (!name) return res.json({ success: false, message: MESSAGES.BOARD.VALIDATION.NAME_REQUIRED });
   try {
     const exists = await Board.exists({
       name,
       user: new mongoose.Types.ObjectId(payload._id),
     });
     if (exists)
-      return res.json({ success: false, message: "Board already exists" });
+      return res.json({ success: false, message: MESSAGES.BOARD.ERROR.ALREADY_EXISTS });
     const board = await Board.create({
       name,
       user: new mongoose.Types.ObjectId(payload._id),
     });
     if (!board)
-      return res.json({ success: false, message: "Something went wrong" });
+      return res.json({ success: false, message: MESSAGES.BOARD.ERROR.CREATION_FAILED });
 
     const user = await User.findOne({ _id: new mongoose.Types.ObjectId(payload._id) }).select("name")
     logActivity({
@@ -34,12 +35,12 @@ const createBoard = async (req, res) => {
       message: `${user.name} created a board *${board.name}*`
     });
 
-    return res.json({ success: true, message: "Board created", board });
+    return res.json({ success: true, message: MESSAGES.BOARD.SUCCESS.CREATED_SUCCESSFULLY, board });
   } catch (error) {
     console.log("An error occured in createBoard function: ", error.message);
     return res.json({
       success: false,
-      message: "Error in creating board",
+      message: MESSAGES.BOARD.ERROR.CREATION_FAILED,
     });
   }
 };
@@ -76,7 +77,7 @@ const getAllBoards = async (req, res) => {
     ];
 
     if (boards.length === 0) {
-      return res.json({ success: false, message: "No boards found" });
+      return res.json({ success: false, message: MESSAGES.BOARD.INFO.NO_BOARDS_FOUND });
     }
 
     return res.json({ success: true, boards });
@@ -93,7 +94,7 @@ const deleteBoard = async (req, res) => {
   const payload = req.payload;
   const { id } = req.params;
 
-  if (!id) return res.json({ success: false, message: "Board ID is required" });
+  if (!id) return res.json({ success: false, message: MESSAGES.BOARD.VALIDATION.INVALID_BOARD_ID });
 
   try {
     const board = await Board.findOne({
@@ -104,7 +105,7 @@ const deleteBoard = async (req, res) => {
     if (!board)
       return res.json({
         success: false,
-        message: "Board not found or you are not authorized",
+        message: MESSAGES.BOARD.ERROR.NOT_FOUND,
       });
 
     if (board.isDefault)
@@ -123,12 +124,12 @@ const deleteBoard = async (req, res) => {
     });
     await Board.deleteOne({ _id: board._id });
 
-    return res.json({ success: true, message: "Board deleted" });
+    return res.json({ success: true, message: MESSAGES.BOARD.SUCCESS.DELETED_SUCCESSFULLY });
   } catch (error) {
     console.log("An error occured in deleteBoard function: ", error.message);
     return res.json({
       success: false,
-      message: "Error in deleting board",
+      message: MESSAGES.BOARD.ERROR.DELETE_FAILED,
     });
   }
 };
@@ -139,11 +140,11 @@ const changeStatus = async (req, res) => {
   const { boardId } = req.body;
 
   if (!status) {
-    return res.json({ success: false, message: "Status is required" });
+    return res.json({ success: false, message: MESSAGES.BOARD.VALIDATION.STATUS_REQUIRED });
   }
 
   if (!boardId) {
-    return res.json({ success: false, message: "Board ID is required" });
+    return res.json({ success: false, message: MESSAGES.BOARD.VALIDATION.INVALID_BOARD_ID });
   }
 
   try {
@@ -155,7 +156,7 @@ const changeStatus = async (req, res) => {
     if (!board) {
       return res.json({
         success: false,
-        message: "Board not found or you are not authorized",
+        message: MESSAGES.BOARD.ERROR.NOT_FOUND,
       });
     }
 
@@ -202,7 +203,7 @@ const addCollaborators = async (req, res) => {
   const { boardId } = req.params;
 
   if (!boardId) {
-    return res.json({ success: false, message: "Board ID is required" });
+    return res.json({ success: false, message: MESSAGES.BOARD.VALIDATION.BOARD_ID_REQUIRED });
   }
   if (
     !collaborators ||
@@ -224,7 +225,7 @@ const addCollaborators = async (req, res) => {
     if (!board) {
       return res.json({
         success: false,
-        message: "Board not found or you are not authorized",
+        message: MESSAGES.BOARD.ERROR.NOT_FOUND,
       });
     }
 
@@ -331,11 +332,11 @@ const getBoard = async (req, res) => {
   const { boardId: id } = req.params || {};
 
   if (!id) {
-    return res.json({ success: false, message: "Board ID is required" });
+    return res.json({ success: false, message: MESSAGES.BOARD.VALIDATION.BOARD_ID_REQUIRED });
   }
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
-    return res.json({ success: false, message: "Invalid Board ID format" });
+    return res.json({ success: false, message: MESSAGES.BOARD.VALIDATION.INVALID_BOARD_ID_FORMAT });
   }
 
   try {
@@ -381,7 +382,7 @@ const getAllCollaborators = async (req, res) => {
     let { boardId } = req.params || {};
 
     if (!boardId)
-      return res.json({ success: false, message: "Board Id required" });
+      return res.json({ success: false, message: MESSAGES.BOARD.VALIDATION.BOARD_ID_REQUIRED });
 
     let boardCheck = sanitizeObjectId(boardId);
     if (!boardCheck.success)
@@ -396,7 +397,7 @@ const getAllCollaborators = async (req, res) => {
       "_id name email"
     );
     if (collaborators.length === 0)
-      return res.json({ success: false, message: "No collaborators found" });
+      return res.json({ success: false, message: MESSAGES.BOARD.INFO.NO_COLLABORATORS_FOUND });
 
     return res.json({
       success: true,

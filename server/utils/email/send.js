@@ -1,4 +1,5 @@
 import mg from "../../config/mailgun.js";
+import { MESSAGES } from "../../constants/messages.js";
 
 const sendMail = async (to, subject, text, html = null) => {
   try {
@@ -11,7 +12,7 @@ const sendMail = async (to, subject, text, html = null) => {
     });
 
     console.log("Mail sent:", response.id);
-    return { success: true, message: "Mail sent successfully", response };
+    return { success: true, message: MESSAGES.EMAIL.SUCCESS.SENT_SUCCESSFULLY, response };
   } catch (error) {
     console.error("Mailgun error in send.js function :", error);
     return { success: false, message: error.message };

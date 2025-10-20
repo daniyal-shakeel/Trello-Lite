@@ -7,6 +7,7 @@ import { validateString } from "../utils/string.js";
 import { sanitizeObjectId } from "../utils/sanitizeObjectId.js";
 import { task } from "../utils/default-values/task.js";
 import { logActivity } from "../utils/logActivity.js";
+import {MESSAGES} from "../constants/messages.js";
 
 const create = async (req, res) => {
   try {
@@ -178,9 +179,9 @@ const updateTask = async (req, res) => {
   let { boardId, taskId } = req.params || {};
   const { updatedTaskTitle } = req.body || {};
   if (!taskId)
-    return res.json({ success: false, message: "TaskId is required" });
+    return res.json({ success: false, message: MESSAGES.TASK.VALIDATION.TASK_ID_REQUIRED });
   if (!boardId)
-    return res.json({ success: false, message: "boardId is required" });
+    return res.json({ success: false, message: MESSAGES.TASK.VALIDATION.BOARD_ID_REQUIRED });
 
   let taskCheck = sanitizeObjectId(taskId);
   if (!taskCheck.success)
@@ -199,7 +200,7 @@ const updateTask = async (req, res) => {
   boardId = boardCheck.validId;
 
   if (!updatedTaskTitle)
-    return res.json({ success: false, message: "Task title is required" });
+    return res.json({ success: false, message: MESSAGES.TASK.VALIDATION.TITLE_REQUIRED });
 
   if (String(updatedTaskTitle).length > task.maxLength) {
     return res.json({
@@ -244,7 +245,7 @@ const updateTask = async (req, res) => {
       });
 
     if (task.title === updatedTaskTitle)
-      return res.json({ success: false, message: "Title unchanged" });
+      return res.json({ success: false, message: MESSAGES.TASK.VALIDATION.TITLE_UNCHANGED });
 
     task.title = updatedTaskTitle;
     await task.save();
@@ -278,9 +279,9 @@ const deleteTask = async (req, res) => {
   let { _id: userId } = req.payload || {};
 
   if (!boardId)
-    return res.json({ success: false, message: "Board Id required" });
-  if (!taskId) return res.json({ success: false, message: "Task Id required" });
-  if (!userId) return res.json({ success: false, message: "User Id required" });
+    return res.json({ success: false, message: MESSAGES.TASK.VALIDATION.BOARD_ID_REQUIRED_ALT });
+  if (!taskId) return res.json({ success: false, message: MESSAGES.TASK.VALIDATION.TASK_ID_REQUIRED_ALT });
+  if (!userId) return res.json({ success: false, message: MESSAGES.TASK.VALIDATION.USER_ID_REQUIRED });
 
   let boardCheck = sanitizeObjectId(boardId);
   if (!boardCheck.success)
@@ -308,17 +309,17 @@ const deleteTask = async (req, res) => {
 
   try {
     const user = await User.exists({ _id: userId });
-    if (!user) return res.json({ success: false, message: "User not found" });
+    if (!user) return res.json({ success: false, message: MESSAGES.USER.ERROR.NOT_FOUND });
 
     const board = await Board.findOne({ _id: boardId });
-    if (!board) return res.json({ success: false, message: "Board not found" });
+    if (!board) return res.json({ success: false, message: MESSAGES.BOARD.ERROR.NOT_FOUND });
 
     const task = await Task.findOne({
       _id: taskId,
       boardId,
       createdBy: userId,
     });
-    if (!task) return res.json({ success: false, message: "Task not found" });
+    if (!task) return res.json({ success: false, message: MESSAGES.TASK.ERROR.NOT_FOUND });
     let taskTitle = task.title;
     const result = await task.deleteOne();
 
@@ -332,11 +333,11 @@ const deleteTask = async (req, res) => {
       });
     }
 
-    return res.json({ success: true, message: "Task deleted" });
+    return res.json({ success: true, message: MESSAGES.TASK.SUCCESS.DELETED_SUCCESSFULLY });
   } catch (error) {
 
     console.log("An error occured in deleteTask function: ", error.message);
-    return res.json({ success: false, message: "Error in deleting task" });
+    return res.json({ success: false, message: MESSAGES.TASK.ERROR.DELETE_FAILED });
   }
 };
 

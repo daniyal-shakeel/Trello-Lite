@@ -5,7 +5,8 @@ import { validateString } from "../utils/string.js";
 import { sanitizeObjectId } from "../utils/sanitizeObjectId.js";
 import { comment } from "../utils/default-values/comment.js";
 import { mapComment } from "../utils/mapper.js";
-import { logActivity } from "../utils/logActivity.js"
+import { logActivity } from "../utils/logActivity.js";
+import {MESSAGES} from "../constants/messages.js";
 
 const createComment = async (req, res) => {
   let { taskId, commentText: content } = req.body || {};
@@ -13,7 +14,7 @@ const createComment = async (req, res) => {
   const payload = req.payload;
 
   if (!taskId || !authorId)
-    return res.json({ success: false, message: "Something went wrong" });
+    return res.json({ success: false, message: MESSAGES.COMMENT.GENERAL.SOMETHING_WENT_WRONG });
 
   const authorCheck = sanitizeObjectId(authorId);
   if (!authorCheck.success) {
@@ -66,7 +67,7 @@ const createComment = async (req, res) => {
       content,
     });
     if (existingComment)
-      return res.json({ success: false, message: "Duplicate comment" });
+      return res.json({ success: false, message: MESSAGES.COMMENT.ERROR.DUPLICATE_COMMENT });
 
     let newComment = await Comment.create({
       taskId,
@@ -115,7 +116,7 @@ const createComment = async (req, res) => {
     });
   } catch (error) {
     console.log("An error occured in createComment function: ", error.message);
-    return res.json({ success: false, message: "Error in create comment" });
+    return res.json({ success: false, message: MESSAGES.COMMENT.ERROR.CREATION_FAILED });
   }
 };
 
@@ -124,7 +125,7 @@ const getCommentsByTask = async (req, res) => {
   const payload = req.payload;
 
   if (!taskId)
-    return res.json({ success: false, message: "Task Id is required" });
+    return res.json({ success: false, message: MESSAGES.COMMENT.VALIDATION.TASK_ID_REQUIRED });
 
   let taskCheck = sanitizeObjectId(taskId);
   if (!taskCheck.success)
@@ -158,7 +159,7 @@ const getCommentsByTask = async (req, res) => {
       "An error occured in getCommentsByTask function: ",
       error.message
     );
-    return res.json({ success: false, message: "Comments fetching failed" });
+    return res.json({ success: false, message: MESSAGES.COMMENT.ERROR.FETCH_FAILED });
   }
 };
 
@@ -168,10 +169,10 @@ const updateComment = async (req, res) => {
   const { updatedCommentText: updatedContent } = req.body || {};
 
   if (!taskId)
-    return res.json({ success: false, message: "Task Id is required" });
+    return res.json({ success: false, message: MESSAGES.COMMENT.VALIDATION.TASK_ID_REQUIRED });
 
   if (!commentId)
-    return res.json({ success: false, message: "Comment Id is required" });
+    return res.json({ success: false, message: MESSAGES.COMMENT.VALIDATION.COMMENT_ID_REQUIRED });
 
   let taskCheck = sanitizeObjectId(taskId);
   if (!taskCheck.success)
@@ -271,10 +272,10 @@ const deleteComment = async (req, res) => {
   let { commentId, taskId } = req.params || {};
   let { _id: authorId } = req.payload || {};
 
-  if (!taskId) return res.json({ success: false, message: "Task Id required" });
+  if (!taskId) return res.json({ success: false, message: MESSAGES.COMMENT.VALIDATION.TASK_ID_REQUIRED });
   if (!commentId)
-    return res.json({ success: false, message: "Comment Id required" });
-  if (!authorId) return res.json({ success: false, message: "User Id required" });
+    return res.json({ success: false, message: MESSAGES.COMMENT.VALIDATION.COMMENT_ID_REQUIRED });
+  if (!authorId) return res.json({ success: false, message: MESSAGES.COMMENT.VALIDATION.AUTHOR_ID_REQUIRED });
 
   let taskCheck = sanitizeObjectId(taskId);
   if (!taskCheck.success)
@@ -300,7 +301,7 @@ const deleteComment = async (req, res) => {
   try {
     const task = await Task.findOne({ _id: taskId });
     if (!task)
-      return res.json({ success: false, message: "Task is not found" });
+      return res.json({ success: false, message: MESSAGES.TASK.ERROR.NOT_FOUND });
 
     const comment = await Comment.findOne({
       _id: commentId,
@@ -309,7 +310,7 @@ const deleteComment = async (req, res) => {
     });
 
     if (!comment)
-      return res.json({ success: false, message: "Comment not found" });
+      return res.json({ success: false, message: MESSAGES.COMMENT.ERROR.NOT_FOUND });
 
     comment.isDeleted = true;
     await comment.save();
@@ -321,10 +322,10 @@ const deleteComment = async (req, res) => {
       task: taskId,
       message: `*${authorDoc.name}* has deleted comment *${comment.content}* on a task *${task.title}*`
     });
-    return res.json({ success: true, message: "Comment deleted" });
+    return res.json({ success: true, message: MESSAGES.COMMENT.SUCCESS.DELETED_SUCCESSFULLY });
   } catch (error) {
     console.log("An error occured in deleteComment function: ", error.message);
-    return res.json({ success: false, message: "Error in deleting comment" });
+    return res.json({ success: false, message: MESSAGES.COMMENT.ERROR.DELETE_FAILED });
   }
 };
 

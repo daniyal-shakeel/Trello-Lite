@@ -8,6 +8,7 @@ import { User } from "../models/user.js";
 import { Board } from "../models/board.js";
 import { generateToken } from "../utils/jwt.js";
 import { hashPassword, comparePassword } from "../utils/bcrypt.js";
+import { MESSAGES } from "../constants/messages.js";
 
 function sendJwtAndClearCookies(res, user) {
   res.clearCookie("google_oauth_state");
@@ -137,7 +138,7 @@ const signup = async (req, res) => {
   const { name, email, password } = req.body;
 
   if (!name || !email || !password) {
-    return res.json({ success: false, message: "All fields are required" });
+    return res.json({ success: false, message: MESSAGES.AUTH.VALIDATION.ALL_FIELDS_REQUIRED });
   }
 
   try {
@@ -150,7 +151,7 @@ const signup = async (req, res) => {
     }
 
     if (existingUser) {
-      return res.json({ success: false, message: "Email already registered" });
+      return res.json({ success: false, message: MESSAGES.AUTH.ERROR.EMAIL_ALREADY_REGISTERED });
     }
 
     const hashedPassword = await hashPassword(password);
@@ -181,12 +182,12 @@ const signup = async (req, res) => {
 
     return res.json({
       success: true,
-      message: "Signup successful",
+      message: MESSAGES.AUTH.SUCCESS.SIGNUP_SUCCESSFUL,
       user,
     });
   } catch (err) {
     console.error("An error occured in signup function", err.message);
-    return res.json({ success: false, message: "Something went wrong" });
+    return res.json({ success: false, message: MESSAGES.AUTH.ERROR.SOMETHING_WENT_WRONG });
   }
 };
 
@@ -196,7 +197,7 @@ const login = async (req, res) => {
   if (!email || !password) {
     return res.json({
       success: false,
-      message: "Email and password are required",
+      message: MESSAGES.AUTH.VALIDATION.EMAIL_PASSWORD_REQUIRED,
     });
   }
 
@@ -204,7 +205,7 @@ const login = async (req, res) => {
     const user = await User.findOne({ email }).select("+password");
 
     if (!user) {
-      return res.json({ success: false, message: "Invalid credentials" });
+      return res.json({ success: false, message: MESSAGES.AUTH.ERROR.INVALID_CREDENTIALS });
     }
 
     if (user.googleId) {
@@ -217,7 +218,7 @@ const login = async (req, res) => {
 
     const isMatch = await comparePassword(password, user.password);
     if (!isMatch) {
-      return res.json({ success: false, message: "Invalid credentials" });
+      return res.json({ success: false, message: MESSAGES.AUTH.ERROR.INVALID_CREDENTIALS });
     }
 
     const token = generateToken({
@@ -235,12 +236,12 @@ const login = async (req, res) => {
 
     return res.json({
       success: true,
-      message: "Login successful",
+      message: MESSAGES.AUTH.SUCCESS.LOGIN_SUCCESSFUL,
       user,
     });
   } catch (err) {
     console.error("An error occured in login function", err.message);
-    return res.json({ success: false, message: "Something went wrong" });
+    return res.json({ success: false, message: MESSAGES.AUTH.ERROR.SOMETHING_WENT_WRONG });
   }
 };
 
@@ -252,13 +253,13 @@ const logout = async (_, res) => {
 
     return res.json({
       success: true,
-      message: "Logged out successfully",
+      message: MESSAGES.AUTH.SUCCESS.LOGOUT_SUCCESSFUL,
     });
   } catch (err) {
     console.error("An error occurred in logout function: ", err.message);
     return res.json({
       success: false,
-      message: "Something went wrong during logout",
+      message: MESSAGES.AUTH.ERROR.LOGOUT_FAILED,
     });
   }
 };
