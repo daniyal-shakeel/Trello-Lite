@@ -6,7 +6,7 @@ import { getApiUri } from "../../utils/getUri";
 
 const Comment = ({
   comment: c,
-  setComments = () => console.log("Somehing went wrong"),
+  setComments = () => {},
   getCommentsByTask,
 }) => {
   const [editComment, setEditComment] = useState("");
@@ -24,15 +24,13 @@ const Comment = ({
       if (res?.data?.success) {
         setEditComment("");
         setUpdatedCommentText(res.data.updatedComment.content);
-        console.log(res.data?.message || "Operation successful");
+       
 
         getCommentsByTask();
       } else {
-        console.log(res.data?.message || "Error occured in update comment");
       }
     } catch (error) {
       console.log(
-        "An error occured in handleUpdateComment function in components/Comment.jsx: ",
         error.message
       );
     }
@@ -46,12 +44,9 @@ const Comment = ({
       );
       if (res?.data?.success) {
         setComments((prev) => prev.filter((p) => p._id !== c._id));
-        console.log(res.data?.message || "Operation successful");
-      } else {
-        console.log(res.data?.message || "Operation failed");
-      }
+      } 
     } catch (error) {
-      console.log("An error occured in handleDeleteComment function: ");
+      console.log(error.message);
     }
   };
 
@@ -68,8 +63,6 @@ const Comment = ({
               <Pencil
                 onClick={() =>
                   setEditComment((prev) => {
-                    console.log(c);
-                    console.log(prev);
                     if (prev) {
                       return prev._id;
                     } else {

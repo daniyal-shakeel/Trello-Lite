@@ -110,18 +110,13 @@ const Login = ({ auth }) => {
           window.location.href = getRedirectUri("/dashboard");
         }
       } else if (res.data.redirect) {
-        navigate(`/login?error=${encodeURIComponent(res.data.message)}`);
-        console.log(res.data.message.toString());
+        navigate(`/login?error=${encodeURIComponent(res.data.message.toString())}`);
       } else {
         setFailureMessage(res.data.message || "Something went wrong.");
         setSuccessMessage("");
-        console.log(res.data.message);
       }
     } catch (error) {
-      console.log(
-        "An error occured in handleSubmit function in Login.jsx file",
-        error.message
-      );
+      console.log(error.message);
       setFailureMessage("Server error. Please try again later.");
       setSuccessMessage("");
     } finally {
@@ -158,18 +153,16 @@ const Login = ({ auth }) => {
         <div id="login-switch" className="login__switch">
           <button
             onClick={() => handleSwitchTab("login")}
-            className={`login__switch-button ${
-              activeTab === "login" ? "login__switch-button--active" : ""
-            }`}
+            className={`login__switch-button ${activeTab === "login" ? "login__switch-button--active" : ""
+              }`}
           >
             Log in
           </button>
 
           <button
             onClick={() => handleSwitchTab("register")}
-            className={`login__switch-button ${
-              activeTab === "register" ? "login__switch-button--active" : ""
-            }`}
+            className={`login__switch-button ${activeTab === "register" ? "login__switch-button--active" : ""
+              }`}
           >
             Sign up
           </button>
@@ -227,11 +220,10 @@ const Login = ({ auth }) => {
           </div>
           {password && activeTab !== "login" && (
             <p
-              className={`login__password-hint ${
-                isPasswordStrong
-                  ? "login__password-strong"
-                  : "login__password-weak"
-              }`}
+              className={`login__password-hint ${isPasswordStrong
+                ? "login__password-strong"
+                : "login__password-weak"
+                }`}
             >
               {passwordMessage}
             </p>
@@ -254,8 +246,8 @@ const Login = ({ auth }) => {
                   ? "Logging in..."
                   : "Creating your account..."
                 : activeTab === "login"
-                ? "Log in"
-                : "Create account"}
+                  ? "Log in"
+                  : "Create account"}
             </span>
           </button>
         </form>

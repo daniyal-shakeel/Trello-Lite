@@ -32,11 +32,9 @@ const AddCollaborator = ({
         setCollaborators(
           res.data?.collaborators.map((collab) => collab.collaborator.email)
         );
-      } else {
-        console.log(res.data?.message);
-      }
+      } 
     } catch (error) {
-      console.log("An error occured in getAllCollaborators:", error.message);
+      console.log(error.message);
     } finally {
       setLoading(false);
     }

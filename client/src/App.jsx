@@ -20,16 +20,13 @@ const App = () => {
         withCredentials: true,
       });
       if (res.data.success) {
-        console.log(res.data.message);
         setAuth(true);
         setUser(res.data.user);
       } else {
-        console.log(res.data.message);
         setAuth(false);
       }
     } catch (error) {
       console.log(
-        "An error occured in checkAuth function at App.jsx file",
         error.message
       );
     }

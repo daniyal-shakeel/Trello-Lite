@@ -25,7 +25,6 @@ const BoardDeleteConfirmationModal = ({
         getApiUri(`/api/board/delete-board/${boardId}`),
         { withCredentials: true }
       );
-      console.log(res.data);
 
       if (res.data.success) {
         setBoards((prev) => prev.filter((b) => b._id !== boardId));

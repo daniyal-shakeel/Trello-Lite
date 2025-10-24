@@ -15,9 +15,7 @@ const OpenTask = ({
   isOpen = true,
   onClose = () => {},
   task = {},
-  setTasks = () => {
-    console.log("Something went wrong at BoardCard.jsx");
-  },
+  setTasks = () => {},
 }) => {
   const [activeTab, setActiveTab] = useState("activity");
   const [commentText, setCommentText] = useState("");
@@ -55,17 +53,14 @@ const OpenTask = ({
               : t
           )
         );
-        console.log(res.data?.message || "No message received");
         setFailureMessage({});
         setSuccessMessage({ type: "success", text: res?.data?.message });
       } else {
-        console.log(res?.data?.message);
         setSuccessMessage({});
         setFailureMessage({ type: "failure", text: res?.data?.message });
       }
     } catch (error) {
       console.log(
-        "An error occured in handleTaskUpdate in OpenTask.jsx: ",
         error.message
       );
     }
@@ -81,11 +76,9 @@ const OpenTask = ({
       if (res?.data?.success) {
         setActivities(res.data.activities || []);
         setActivityResponses(res.data.activityResponses || {});
-      } else {
-        console.log(res.data?.message);
-      }
+        } 
     } catch (error) {
-      console.log("Error in getActivitiesByTask:", error.message);
+      console.log(error.message);
     } finally {
       setLoadingActivities(false);
     }
@@ -98,7 +91,6 @@ const OpenTask = ({
         withCredentials: true,
       });
       if (res?.data?.success) {
-        console.log(res.data?.message);
         const commentsCopy = res.data?.comments || [];
         if (commentsCopy.length > 0) {
           const mappedComments = commentsCopy.map((comment) => ({
@@ -107,14 +99,9 @@ const OpenTask = ({
           }));
           setComments(mappedComments || []);
         }
-      } else {
-        console.log(res.data?.message);
-      }
+      } 
     } catch (error) {
-      console.log(
-        "An error occured in getCommentsByTask in OpenTask.jsx: ",
-        error.message
-      );
+      console.log(error.message);
     } finally {
       setLoadingComments(false);
     }
@@ -129,19 +116,13 @@ const OpenTask = ({
       );
 
       if (res?.data?.success) {
-        console.log(res.data?.message || "Operation successful");
         const updatedComment = res.data.comment;
         updatedComment["time"] = moment(updatedComment.createdAt).fromNow();
         setComments((prev) => [...prev, res.data.comment]);
         setCommentText("");
-      } else {
-        console.log(res.data?.message || "Operation failed");
-      }
+      } 
     } catch (error) {
-      console.log(
-        "An error occured in postComment in Opentask.jsx: ",
-        error.message
-      );
+      console.log(error.message);
     }
   };
   const handleDeleteTask = async () => {
@@ -154,15 +135,9 @@ const OpenTask = ({
         setTasks((prev) => prev.filter((t) => t._id !== task._id));
         setShowModal(false);
         onClose();
-        console.log(res.data?.message || "Operation successful");
-      } else {
-        console.log(res.data?.message || "Operation failed");
-      }
+      } 
     } catch (error) {
-      console.log(
-        "An error occured in handleDeleteTask function: ",
-        error.message
-      );
+      console.log(error.message);
     }
   };
 

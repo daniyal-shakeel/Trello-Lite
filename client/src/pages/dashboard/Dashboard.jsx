@@ -105,9 +105,7 @@ const Dashboard = ({ setAuth, user }) => {
   const filteredBoards = useMemo(() => {
     return boards.filter((board) => board.status === activeStatus);
   }, [boards, activeStatus]);
-
-  useEffect(() => console.log(boards), [boards]);
-
+  
   const handleBoardChange = (boardId) => {
     setActiveBoard(boardId);
   };
@@ -166,8 +164,6 @@ const Dashboard = ({ setAuth, user }) => {
   useEffect(() => {
     if (activeBoard && activeBoard.length > 0) getAllTasks();
   }, [activeBoard]);
-
-  useEffect(() => console.log("tasks", tasks), [tasks]);
 
   return (
     <div id="dashboard-layout" className="dashboard-layout">

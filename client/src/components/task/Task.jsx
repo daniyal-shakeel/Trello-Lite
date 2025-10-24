@@ -5,11 +5,8 @@ import ModalPortal from "../modals/modal-portal/ModalPortal"
 
 const Task = ({
   task,
-  setTasks = () => {
-    console.log("Something went wrong at BoardCard.jsx");
-  },
+  setTasks = () => {},
 }) => {
-  useEffect(() => console.log(task));
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   return (

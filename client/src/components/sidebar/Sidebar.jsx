@@ -91,7 +91,6 @@ const Sidebar = ({
   };
 
   const addCollaborators = async (boardId, collaborators) => {
-    console.log(boardId);
     try {
       const res = await axios.post(
         getApiUri(`/api/board/collaborators/add/${boardId}`),
@@ -100,7 +99,6 @@ const Sidebar = ({
       );
 
       if (res.data.success) {
-        console.log("Collaborators added:", res.data.message);
         setBoards((prev) =>
           prev.map((b) =>
             b._id === boardId
@@ -147,8 +145,6 @@ const Sidebar = ({
       setSelectedBoard(null);
     }
   }, [isModalOpen]);
-
-  useEffect(() => console.log(boards), [boards]);
 
   if (boardLoading) return <SidebarSkeleton />;
 

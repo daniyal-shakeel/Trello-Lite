@@ -25,11 +25,9 @@ const Activity = () => {
         const fetched = res.data?.activities || [];
         setActivities(fetched);
         setLogs(fetched);
-      } else {
-        console.log(res?.data?.message || "Unknown error");
-      }
+      } 
     } catch (error) {
-      console.log("An error occurred in getActivities:", error.message);
+      console.log(error.message);
     }
   };
 
