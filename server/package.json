@@ -6,7 +6,9 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "server": "nodemon app.js",
-    "start": "node app.js"
+    "start": "node app.js",
+    "dev": "cross-env NODE_ENV=dev node --env-file=.env.dev app.js",
+    "prod": "cross-env NODE_ENV=prod node --env-file=.env.prod app.js"
   },
   "keywords": [],
   "author": "",
@@ -23,5 +25,8 @@
     "jsonwebtoken": "^9.0.2",
     "mailgun.js": "^12.1.0",
     "mongoose": "^8.19.1"
+  },
+  "devDependencies": {
+    "cross-env": "^10.1.0"
   }
 }

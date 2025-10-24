@@ -1,4 +1,3 @@
-import "dotenv/config";
 import express from "express";
 import { connectDB } from "./config/db.js";
 import { redirectToGoogle, handleGoogleCallback } from "./controllers/user.js";
@@ -54,7 +53,7 @@ app.use("/api/task", userAuth, taskRouter);
 app.use("/api/comment", userAuth, commentRouter);
 app.use("/api/activity", userAuth, activityRouter);
 
-if (process.env.NODE_ENV === "development") {
+if (process.env.NODE_ENV === "dev") {
   app.listen(port, () =>
     console.log(`Server is running on http://localhost:${port}`)
   );

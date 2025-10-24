@@ -258,7 +258,7 @@ const Login = ({ auth }) => {
           type="button"
           className="login__oauth"
           onClick={() =>
-            (window.location.href = `${import.meta.env.VITE_SERVER_URL}/google`)
+            (window.location.href = `${import.meta.env.NODE_ENV === "dev" ? "http://localhost:3000" : import.meta.env.VITE_SERVER_URL}/google`)
           }
         >
           <img

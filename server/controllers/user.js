@@ -22,9 +22,9 @@ function sendJwtAndClearCookies(res, user) {
 
   res.cookie("token", token, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
+    secure: process.env.NODE_ENV === "prod",
     maxAge: TOKEN_EXPIRY,
-    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+    sameSite: process.env.NODE_ENV === "prod" ? "none" : "lax",
   });
   return res.redirect(getRedirectUri('/dashboard'));
 }
@@ -43,15 +43,15 @@ const redirectToGoogle = async (_, res) => {
 
     res.cookie("google_oauth_state", state, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
+      secure: process.env.NODE_ENV === "prod",
       maxAge: OAUTH_EXCHANGE_EXPIRY,
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      sameSite: process.env.NODE_ENV === "prod" ? "none" : "lax",
     });
     res.cookie("google_code_verifier", codeVerifier, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
+      secure: process.env.NODE_ENV === "prod",
       maxAge: OAUTH_EXCHANGE_EXPIRY,
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      sameSite: process.env.NODE_ENV === "prod" ? "none" : "lax",
     });
 
     res.redirect(url.toString());
@@ -169,9 +169,9 @@ const signup = async (req, res) => {
 
     res.cookie("token", token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
+      secure: process.env.NODE_ENV === "prod",
       maxAge: TOKEN_EXPIRY,
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      sameSite: process.env.NODE_ENV === "prod" ? "none" : "lax",
     });
 
     await Board.create({
@@ -229,14 +229,14 @@ const login = async (req, res) => {
 
     res.cookie("token", token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
+      secure: process.env.NODE_ENV === "prod",
       maxAge: TOKEN_EXPIRY,
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      sameSite: process.env.NODE_ENV === "prod" ? "none" : "lax",
     });
 
     return res.json({
       success: true,
-      message: MESSAGES.AUTH.SUCCESS.LOGIN_SUCCESSFUL,
+      message: MESSAGES.AUTH.SUCCESS.LOGIN_SUCCESS,
       user,
     });
   } catch (err) {
@@ -253,7 +253,7 @@ const logout = async (_, res) => {
 
     return res.json({
       success: true,
-      message: MESSAGES.AUTH.SUCCESS.LOGOUT_SUCCESSFUL,
+      message: MESSAGES.AUTH.SUCCESS.LOGOUT_SUCCESS,
     });
   } catch (err) {
     console.error("An error occurred in logout function: ", err.message);
